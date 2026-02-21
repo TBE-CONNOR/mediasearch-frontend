@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
+import { motion } from 'motion/react';
 import { Check, Loader2, Lock } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { createCheckoutSession } from '@/api/checkout';
 import { TIERS } from '@/config/pricing';
 import type { PricingTier } from '@/config/pricing';
@@ -10,6 +12,7 @@ import type { PricingTier } from '@/config/pricing';
 export function PricingPage() {
   const [annual, setAnnual] = useState(false);
   const tier = useAuthStore((s) => s.tier);
+  const reducedMotion = useReducedMotion();
 
   const maxSavingsPercent = useMemo(() => {
     let max = 0;
@@ -25,26 +28,49 @@ export function PricingPage() {
   return (
     <div className="p-6">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 text-center">
+        <motion.div
+          className="mb-8 text-center"
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reducedMotion ? 0 : 0.5 }}
+        >
           <h1 className="text-3xl font-bold text-white">Choose Your Plan</h1>
           <p className="mt-2 text-zinc-400">
             Start free, upgrade when you need more.
           </p>
-        </div>
+        </motion.div>
 
-        <BillingToggle
-          annual={annual}
-          onToggle={setAnnual}
-          savingsPercent={maxSavingsPercent}
-        />
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reducedMotion ? 0 : 0.4, delay: reducedMotion ? 0 : 0.1 }}
+        >
+          <BillingToggle
+            annual={annual}
+            onToggle={setAnnual}
+            savingsPercent={maxSavingsPercent}
+          />
+        </motion.div>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {TIERS.map((t) => (
-            <TierCard key={t.id} tier={t} annual={annual} currentTier={tier} />
+          {TIERS.map((t, index) => (
+            <TierCard
+              key={t.id}
+              tier={t}
+              index={index}
+              annual={annual}
+              currentTier={tier}
+              reducedMotion={reducedMotion}
+            />
           ))}
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-2">
+        <motion.div
+          className="mt-8 flex flex-col items-center gap-2"
+          initial={reducedMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : 0.5 }}
+        >
           <div className="flex items-center gap-3">
             <CardBrandLogo brand="visa" />
             <CardBrandLogo brand="mastercard" />
@@ -60,7 +86,7 @@ export function PricingPage() {
           <p className="text-xs text-zinc-500">
             Prices shown in USD. Applicable taxes may be added at checkout.
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -114,15 +140,24 @@ function BillingToggle({
 
 function TierCard({
   tier: t,
+  index,
   annual,
   currentTier,
+  reducedMotion,
 }: {
   tier: PricingTier;
+  index: number;
   annual: boolean;
   currentTier: string | null;
+  reducedMotion: boolean;
 }) {
   const isCurrentPlan = currentTier === t.id;
   const isFree = t.monthlyPrice === null;
+
+  // Free + Pro (indices 0,1) slide from left; Plus + Power (2,3) slide from right
+  const fromLeft = index < 2;
+  const slideX = fromLeft ? -60 : 60;
+  const sideIndex = fromLeft ? index : index - 2;
 
   const cardClasses = t.recommended
     ? 'relative rounded-xl border-2 border-blue-500 bg-zinc-900/50 p-6 ring-1 ring-blue-500/20 lg:scale-105'
@@ -150,7 +185,18 @@ function TierCard({
     : 'Billed monthly · Auto-renews until canceled';
 
   return (
-    <div className={cardClasses}>
+    <motion.div
+      className={cardClasses}
+      initial={reducedMotion ? false : { opacity: 0, x: slideX }}
+      whileInView={reducedMotion ? undefined : { opacity: 1, x: 0 }}
+      whileHover={reducedMotion ? undefined : { y: -4 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{
+        opacity: { duration: 0.7, ease: 'easeOut' },
+        x: { duration: 0.7, delay: sideIndex * 0.12, ease: 'easeOut' },
+        y: { type: 'spring', stiffness: 300, damping: 20 },
+      }}
+    >
       {t.badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <span
@@ -206,7 +252,7 @@ function TierCard({
           className={buttonClasses}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
 

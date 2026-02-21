@@ -105,24 +105,11 @@ export async function searchFiles(
   if (options?.rerank != null) body.rerank = options.rerank;
   if (options?.generate != null) body.generate = options.generate;
 
-  if (options?.cachedFiles) {
-    // Fast path: run search and enrichment in parallel with cached data
-    const searchRes = await api.post<SearchResponse>('/search', body);
-    const result = searchRes.data;
-    const files = options.cachedFiles;
-
-    const enrichedCitations: EnrichedCitation[] = result.citations.map((c) => ({
-      ...c,
-      file: files.find((f) => f.file_id === (c.file_id ?? stripExt(c.source_file))) ?? null,
-    }));
-
-    return { ...result, citations: enrichedCitations };
-  }
-
-  // Fallback: search first, then fetch only the referenced files
   const searchRes = await api.post<SearchResponse>('/search', body);
   const result = searchRes.data;
-  const files = await fetchCitationFiles(result.citations);
+
+  const files = options?.cachedFiles
+    ?? await fetchCitationFiles(result.citations);
 
   const enrichedCitations: EnrichedCitation[] = result.citations.map((c) => ({
     ...c,

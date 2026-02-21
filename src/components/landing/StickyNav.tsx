@@ -9,7 +9,10 @@ export function StickyNav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      const shouldBeScrolled = window.scrollY > 20;
+      setScrolled((prev) => (prev === shouldBeScrolled ? prev : shouldBeScrolled));
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -17,7 +20,7 @@ export function StickyNav() {
   return (
     <nav
       className={cn(
-        'fixed top-0 z-50 w-full transition-all duration-300',
+        'fixed top-0 z-50 w-full transition-[background-color,border-color,backdrop-filter] duration-300',
         scrolled
           ? 'border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-lg'
           : 'bg-[#09090b]/40 backdrop-blur-sm',

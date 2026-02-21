@@ -53,7 +53,13 @@ export function FileDetailPage() {
   const downloadMut = useMutation({
     mutationFn: () => getDownloadUrl(fileId ?? ''),
     onSuccess: ({ download_url }) => {
-      window.open(download_url, '_blank');
+      const a = document.createElement('a');
+      a.href = download_url;
+      a.download = '';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     },
   });
 

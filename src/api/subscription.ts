@@ -5,11 +5,15 @@ export type SubscriptionStatus =
   | 'active'
   | 'past_due'
   | 'canceled'
-  | 'trialing';
+  | 'trialing'
+  | 'incomplete'
+  | 'incomplete_expired'
+  | 'unpaid'
+  | 'paused';
 
 export interface SubscriptionInfo {
   tier: Tier;
-  interval: string;
+  interval: 'month' | 'year';
   amount: number;
   currency: string;
   subscription_status: SubscriptionStatus;

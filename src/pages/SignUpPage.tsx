@@ -1,8 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, Navigate, Link } from 'react-router';
 import { useAuth } from '@/auth/useAuth';
 import { useAuthStore } from '@/store/authStore';
 import { Footer } from '@/components/Footer';
+import { Check, Minus } from 'lucide-react';
+
+const passwordRules = [
+  { label: '8+ characters', test: (p: string) => p.length >= 8 },
+  { label: 'Uppercase letter', test: (p: string) => /[A-Z]/.test(p) },
+  { label: 'Lowercase letter', test: (p: string) => /[a-z]/.test(p) },
+  { label: 'Number', test: (p: string) => /\d/.test(p) },
+  { label: 'Special character', test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+];
 
 export function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -10,9 +19,24 @@ export function SignUpPage() {
   const { signUp, loading, error } = useAuth();
   const navigate = useNavigate();
 
+  const idToken = useAuthStore((s) => s.idToken);
+  const authReady = useAuthStore((s) => s.authReady);
+
+  const allValid = passwordRules.every((r) => r.test(password));
+
   useEffect(() => {
     useAuthStore.getState().setAuthError(null);
   }, []);
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50" role="status" aria-label="Loading">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500" />
+      </div>
+    );
+  }
+
+  if (idToken) return <Navigate to="/dashboard" replace />;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +67,7 @@ export function SignUpPage() {
                 id="signup-email"
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
@@ -57,10 +82,32 @@ export function SignUpPage() {
                 id="signup-password"
                 type="password"
                 required
+                autoComplete="new-password"
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
               />
+              {password.length > 0 && (
+                <ul aria-live="polite" aria-label="Password requirements" className="mt-2 space-y-1">
+                  {passwordRules.map((rule) => {
+                    const passes = rule.test(password);
+                    return (
+                      <li
+                        key={rule.label}
+                        className={`flex items-center gap-1.5 text-xs ${passes ? 'text-green-600' : 'text-gray-400'}`}
+                      >
+                        {passes ? (
+                          <Check className="h-3 w-3" />
+                        ) : (
+                          <Minus className="h-3 w-3" />
+                        )}
+                        {rule.label}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
 
             {error && (
@@ -69,7 +116,7 @@ export function SignUpPage() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !allValid}
               className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
             >
               {loading ? 'Creating account...' : 'Sign Up'}

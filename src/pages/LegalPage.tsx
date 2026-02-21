@@ -25,7 +25,9 @@ export function LegalPage() {
   const [activeTab, setActiveTab] = useState<TabId>(getTabFromHash);
 
   useEffect(() => {
+    const prevTitle = document.title;
     document.title = 'Legal — MediaSearch';
+    return () => { document.title = prevTitle; };
   }, []);
 
   useEffect(() => {
@@ -58,7 +60,8 @@ export function LegalPage() {
         <div className="mx-auto w-full max-w-4xl">
           <h1 className="mb-6 text-3xl font-bold text-gray-900">Legal</h1>
 
-          <nav
+          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- roving tabIndex on child tabs */}
+          <div
             className="mb-8 flex gap-1 overflow-x-auto rounded-lg bg-gray-200 p-1"
             role="tablist"
             aria-label="Legal documents"
@@ -92,7 +95,7 @@ export function LegalPage() {
                 {tab.label}
               </button>
             ))}
-          </nav>
+          </div>
 
           <div
             id={`panel-${activeTab}`}

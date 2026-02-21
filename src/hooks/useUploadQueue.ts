@@ -12,7 +12,7 @@ import type { UploadResponse } from '@/api/upload';
 import { getFile } from '@/api/files';
 import { useUploadStore } from '@/store/uploadStore';
 import type { UploadItem } from '@/store/uploadStore';
-import { queryClient } from '@/queryClient';
+import { queryClient } from '@/config/queryClient';
 import {
   UPLOAD_MAX_CONCURRENT,
   KB_SYNC_GRACE_PERIOD_MS,
@@ -93,7 +93,10 @@ function startPolling(id: string, fileId: string) {
       });
       return;
     }
-    const tid = setTimeout(poll, interval);
+    const tid = setTimeout(() => {
+      timeoutIds.delete(tid);
+      void poll();
+    }, interval);
     timeoutIds.add(tid);
   };
 
@@ -163,6 +166,7 @@ async function handleUpload(rawFile: File) {
     }
 
     // Step 2: Upload to S3 (XHR for progress)
+    let abortUpload: (() => void) | undefined;
     try {
       const { headers } = res.upload_instructions;
       const upload = uploadToS3(
@@ -172,10 +176,12 @@ async function handleUpload(rawFile: File) {
         headers['Content-Disposition'],
         (percent) => updateUpload(id, { progress: percent }),
       );
-      activeAborts.add(upload.abort);
+      abortUpload = upload.abort;
+      activeAborts.add(abortUpload);
       await upload.promise;
-      activeAborts.delete(upload.abort);
+      activeAborts.delete(abortUpload);
     } catch (err) {
+      if (abortUpload) activeAborts.delete(abortUpload);
       updateUpload(id, {
         stage: 'failed',
         error: err instanceof Error ? err.message : 'Upload to S3 failed',
@@ -188,6 +194,7 @@ async function handleUpload(rawFile: File) {
 
   // Step 3: Poll processing status — slot already released
   updateUpload(id, { stage: 'processing', progress: 100 });
+  if (!res) return; // All failure paths return early; guard for type safety
   startPolling(id, res.file_id);
 }
 
@@ -201,6 +208,7 @@ export function cleanupUploads() {
     clearTimeout(kbSyncTimerId);
     kbSyncTimerId = undefined;
   }
+  pollingResumed.clear();
   pendingQueue.length = 0;
   activeCount = 0;
   useUploadStore.getState().clearAll();

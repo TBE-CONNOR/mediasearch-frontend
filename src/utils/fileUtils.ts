@@ -71,7 +71,8 @@ export function formatDateTime(iso: string): string {
   });
 }
 
-/** Currency amount in cents → display string (e.g. 2999 → "$29.99") */
+/** Currency amount in cents → display string (e.g. 2999 → "$29.99").
+ *  Hardcoded to en-US because all prices are USD via Stripe. */
 export function formatAmount(amount: number, currency: string): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

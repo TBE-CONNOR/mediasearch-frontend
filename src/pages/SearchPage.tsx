@@ -105,6 +105,7 @@ export function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search your files..."
             aria-label="Search your files"
+            // eslint-disable-next-line jsx-a11y/no-autofocus -- primary action on a dedicated search page
             autoFocus
             className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-500 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
           />
@@ -181,7 +182,7 @@ export function SearchPage() {
 
         {/* Loading */}
         {searchMut.isPending && (
-          <div className="mt-8 flex items-center justify-center gap-2 text-gray-500">
+          <div role="status" className="mt-8 flex items-center justify-center gap-2 text-gray-500">
             <Loader2 className="h-5 w-5 animate-spin" />
             Searching your files...
           </div>
@@ -196,6 +197,14 @@ export function SearchPage() {
             viewMode={viewMode}
             onChangeViewMode={setViewMode}
           />
+        )}
+
+        {/* Empty state */}
+        {!displayResult && !searchMut.isPending && (
+          <div className="mt-12 text-center text-gray-400">
+            <Search className="mx-auto h-10 w-10 text-gray-300" />
+            <p className="mt-3 text-sm">Search your files with natural language</p>
+          </div>
         )}
       </div>
     </div>

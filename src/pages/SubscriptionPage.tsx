@@ -33,7 +33,7 @@ export function SubscriptionPage() {
     const refreshToken = useAuthStore.getState().refreshToken;
     if (refreshToken) {
       void cognitoClient
-        .refreshFull(refreshToken)
+        .refresh(refreshToken)
         .then((result) => {
           useAuthStore.getState().setTokens({
             idToken: result.idToken,
@@ -47,9 +47,14 @@ export function SubscriptionPage() {
         })
         .catch(() => {
           // Token refresh failed — subscription query will still work with current token
+        })
+        .then(() => {
+          // Invalidate after refresh so the query fires with the updated token/tier
+          void queryClient.invalidateQueries({ queryKey: ['subscription'] });
         });
+    } else {
+      void queryClient.invalidateQueries({ queryKey: ['subscription'] });
     }
-    void queryClient.invalidateQueries({ queryKey: ['subscription'] });
   }, [location.search, queryClient]);
 
   const {
@@ -72,7 +77,7 @@ export function SubscriptionPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center" role="status" aria-label="Loading subscription">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
       </div>
     );
@@ -85,7 +90,7 @@ export function SubscriptionPage() {
           {is429(error) ? (
             <QuotaErrorBanner error={error} />
           ) : (
-            <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+            <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
               <p>Failed to load subscription details.</p>
               <button
                 type="button"

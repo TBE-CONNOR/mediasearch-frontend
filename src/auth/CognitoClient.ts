@@ -19,11 +19,6 @@ export interface AuthResult {
   tier: Tier;
 }
 
-export interface RefreshResult {
-  idToken: string;
-  expiresAt: number;
-}
-
 const userPool = new CognitoUserPool({
   UserPoolId: AWS_CONFIG.userPoolId,
   ClientId: AWS_CONFIG.userPoolClientId,
@@ -39,8 +34,15 @@ function toError(err: unknown): Error {
 
 function decodeJwtPayload(token: string): Record<string, unknown> {
   const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  return JSON.parse(atob(base64)) as Record<string, unknown>;
+  if (!base64Url) {
+    throw new Error('Invalid JWT: missing payload segment');
+  }
+  try {
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64)) as Record<string, unknown>;
+  } catch {
+    throw new Error('Invalid JWT: payload is not valid JSON');
+  }
 }
 
 const validTierSet = new Set<string>(VALID_TIERS);
@@ -100,29 +102,7 @@ export const cognitoClient = {
     });
   },
 
-  refresh(refreshToken: string): Promise<RefreshResult> {
-    return new Promise((resolve, reject) => {
-      const email = currentEmail ?? userPool.getCurrentUser()?.getUsername();
-      if (!email) {
-        return reject(new Error('No active session'));
-      }
-      const user = new CognitoUser({ Username: email, Pool: userPool });
-      const token = new CognitoRefreshToken({ RefreshToken: refreshToken });
-      user.refreshSession(token, (err: unknown, session: CognitoUserSession) => {
-        if (err) return reject(toError(err));
-        currentEmail = email;
-        const idToken = session.getIdToken().getJwtToken();
-        const expiresAt = session.getIdToken().getExpiration() * 1000;
-        resolve({ idToken, expiresAt });
-      });
-    });
-  },
-
-  /**
-   * Like refresh() but returns full AuthResult including tier.
-   * Use after Stripe checkout to pick up updated Cognito group membership.
-   */
-  refreshFull(refreshToken: string): Promise<AuthResult> {
+  refresh(refreshToken: string): Promise<AuthResult> {
     return new Promise((resolve, reject) => {
       const email = currentEmail ?? userPool.getCurrentUser()?.getUsername();
       if (!email) {

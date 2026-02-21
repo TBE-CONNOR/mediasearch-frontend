@@ -13,7 +13,7 @@ import { FILES_REFETCH_INTERVAL_MS } from '@/config/constants';
 export function FilesPage() {
   const {
     data: files,
-    isLoading,
+    isPending,
     error,
     refetch,
   } = useQuery({
@@ -43,7 +43,7 @@ export function FilesPage() {
           </Link>
         </div>
 
-        {isLoading && (
+        {isPending && (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
           </div>
@@ -52,7 +52,7 @@ export function FilesPage() {
         {error && is429(error) && <QuotaErrorBanner error={error} />}
 
         {error && !is429(error) && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+          <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
             <p>Failed to load files.</p>
             <button
               type="button"
@@ -99,6 +99,7 @@ function FileCard({ file }: { file: FileItem }) {
   return (
     <Link
       to={`/files/${file.file_id}`}
+      aria-label={`${file.file_name} — ${getStatusInfo(file.processing_status).label}`}
       className="block rounded-lg bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="mb-3 flex items-start justify-between">

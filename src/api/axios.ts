@@ -29,6 +29,11 @@ function doRefresh(): Promise<{ idToken: string; expiresAt: number }> {
       .refresh(refreshToken)
       .then((t) => {
         useAuthStore.getState().setTokens(t);
+        useAuthStore.getState().setUser({
+          email: t.email,
+          sub: t.sub,
+          tier: t.tier,
+        });
         return t;
       })
       .catch((err: unknown) => {

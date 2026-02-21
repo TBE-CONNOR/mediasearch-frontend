@@ -7,7 +7,7 @@ import { cognitoClient } from '@/auth/CognitoClient';
 import { useAuthStore } from '@/store/authStore';
 import { ProtectedRoute } from '@/router/ProtectedRoute';
 import { AppLayout } from '@/components/AppLayout';
-import { queryClient } from '@/queryClient';
+import { queryClient } from '@/config/queryClient';
 
 const SignInPage = lazy(() =>
   import('@/pages/SignInPage').then((m) => ({ default: m.SignInPage })),

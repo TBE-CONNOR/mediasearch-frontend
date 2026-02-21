@@ -88,7 +88,7 @@ function BillingToggle({
         aria-checked={annual}
         aria-label="Toggle annual billing"
         onClick={() => onToggle(!annual)}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:outline-none ${
           annual ? 'bg-blue-600' : 'bg-gray-200'
         }`}
       >
@@ -263,6 +263,8 @@ function SubscribeButton({
   const priceId = annual ? t.annualPriceId : t.monthlyPriceId;
   const label = isCurrentPlan ? 'Current Plan' : t.cta;
 
+  const [configError, setConfigError] = useState('');
+
   const checkoutMut = useMutation({
     mutationFn: () =>
       createCheckoutSession({
@@ -289,7 +291,16 @@ function SubscribeButton({
       <button
         type="button"
         onClick={() => {
-          if (priceId && cognitoSub) checkoutMut.mutate();
+          if (!cognitoSub) {
+            setConfigError('Please sign in to subscribe.');
+            return;
+          }
+          if (!priceId) {
+            setConfigError('This plan is temporarily unavailable.');
+            return;
+          }
+          setConfigError('');
+          checkoutMut.mutate();
         }}
         disabled={checkoutMut.isPending}
         className={className}
@@ -300,8 +311,13 @@ function SubscribeButton({
           label
         )}
       </button>
+      {configError && (
+        <p role="alert" className="mt-2 text-xs text-red-600">
+          {configError}
+        </p>
+      )}
       {checkoutMut.isError && (
-        <p className="mt-2 text-xs text-red-600">
+        <p role="alert" className="mt-2 text-xs text-red-600">
           {isAxiosError(checkoutMut.error) &&
           checkoutMut.error.response?.status === 404
             ? 'Subscription checkout is temporarily unavailable. Please try again later.'

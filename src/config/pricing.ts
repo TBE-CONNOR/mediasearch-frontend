@@ -16,9 +16,17 @@ export interface PricingTier {
   decoy: boolean;
 }
 
-// Stripe price IDs from env vars — swap .env values when going live
+// Stripe price IDs from env vars — swap .env values when going live.
+// Returns null for missing vars (free tier has no prices).
+// Dev warning logged once per missing key so checkout failures are diagnosable.
+const warnedKeys = new Set<string>();
 function priceEnv(key: string): string | null {
-  return (import.meta.env[key] as string | undefined) || null;
+  const val = (import.meta.env[key] as string | undefined) || null;
+  if (!val && import.meta.env.DEV && !warnedKeys.has(key)) {
+    warnedKeys.add(key);
+    console.warn(`[pricing] Missing env var ${key} — checkout for this plan will be unavailable`);
+  }
+  return val;
 }
 
 export const TIERS: PricingTier[] = [

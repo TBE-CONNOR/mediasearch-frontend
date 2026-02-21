@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { TIER_LABELS } from '@/config/constants';
 
@@ -6,6 +7,27 @@ export function DashboardPage() {
   const email = useAuthStore((s) => s.email);
   const tier = useAuthStore((s) => s.tier);
   const sub = useAuthStore((s) => s.sub);
+  const authReady = useAuthStore((s) => s.authReady);
+  const authError = useAuthStore((s) => s.authError);
+
+  if (!authReady) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-6" role="status" aria-label="Loading account">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div role="alert" className="w-full max-w-md rounded-lg bg-red-50 p-8 text-center">
+          <p className="text-sm text-red-700">Failed to load account information.</p>
+          <p className="mt-1 text-xs text-red-500">{authError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 items-center justify-center p-6">
@@ -15,7 +37,7 @@ export function DashboardPage() {
         <dl className="space-y-3 text-sm">
           <div>
             <dt className="font-medium text-gray-500">Email</dt>
-            <dd className="text-gray-900">{email}</dd>
+            <dd className="text-gray-900">{email ?? '—'}</dd>
           </div>
           <div>
             <dt className="font-medium text-gray-500">Tier</dt>
@@ -25,7 +47,7 @@ export function DashboardPage() {
           </div>
           <div>
             <dt className="font-medium text-gray-500">User ID</dt>
-            <dd className="break-all text-gray-900">{sub}</dd>
+            <dd className="break-all text-gray-900">{sub ?? '—'}</dd>
           </div>
         </dl>
 

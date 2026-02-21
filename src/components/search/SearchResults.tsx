@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { MediaGalleryView } from '@/components/MediaGallery';
 import { AIAnalysisView } from '@/components/search/AIAnalysisView';
 import type { EnrichedSearchResponse } from '@/api/search';
@@ -15,17 +16,37 @@ export function SearchResults({
   viewMode: 'gallery' | 'analysis';
   onChangeViewMode: (mode: 'gallery' | 'analysis') => void;
 }) {
+  const galleryTabRef = useRef<HTMLButtonElement>(null);
+  const analysisTabRef = useRef<HTMLButtonElement>(null);
+
+  const handleTabKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = viewMode === 'gallery' ? 'analysis' : 'gallery';
+      onChangeViewMode(next);
+      (next === 'gallery' ? galleryTabRef : analysisTabRef).current?.focus();
+    }
+  };
+
   return (
     <div className="mt-6 space-y-4">
       {/* Tab bar */}
+      {/* Roving tabIndex on child tabs — container not directly focusable per WAI-ARIA tabs pattern */}
+      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
       <div
         role="tablist"
+        aria-label="Search results view"
+        onKeyDown={handleTabKeyDown}
         className="inline-flex overflow-hidden rounded-lg border border-gray-200"
       >
         <button
+          ref={galleryTabRef}
           type="button"
           role="tab"
+          id="tab-gallery"
           aria-selected={viewMode === 'gallery'}
+          aria-controls="tabpanel-gallery"
+          tabIndex={viewMode === 'gallery' ? 0 : -1}
           onClick={() => onChangeViewMode('gallery')}
           className={`px-4 py-2 text-sm font-medium ${
             viewMode === 'gallery'
@@ -36,9 +57,13 @@ export function SearchResults({
           Media Gallery
         </button>
         <button
+          ref={analysisTabRef}
           type="button"
           role="tab"
+          id="tab-analysis"
           aria-selected={viewMode === 'analysis'}
+          aria-controls="tabpanel-analysis"
+          tabIndex={viewMode === 'analysis' ? 0 : -1}
           onClick={() => onChangeViewMode('analysis')}
           className={`px-4 py-2 text-sm font-medium ${
             viewMode === 'analysis'
@@ -51,13 +76,27 @@ export function SearchResults({
       </div>
 
       {viewMode === 'gallery' ? (
-        <MediaGalleryView citations={data.citations} />
+        <div
+          role="tabpanel"
+          id="tabpanel-gallery"
+          aria-labelledby="tab-gallery"
+          tabIndex={0}
+        >
+          <MediaGalleryView citations={data.citations} />
+        </div>
       ) : (
-        <AIAnalysisView
-          data={data}
-          answerOpen={answerOpen}
-          onToggleAnswer={onToggleAnswer}
-        />
+        <div
+          role="tabpanel"
+          id="tabpanel-analysis"
+          aria-labelledby="tab-analysis"
+          tabIndex={0}
+        >
+          <AIAnalysisView
+            data={data}
+            answerOpen={answerOpen}
+            onToggleAnswer={onToggleAnswer}
+          />
+        </div>
       )}
     </div>
   );

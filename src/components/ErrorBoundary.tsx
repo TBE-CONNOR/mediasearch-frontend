@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -7,16 +7,19 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  private containerRef = createRef<HTMLDivElement>();
+
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(): State {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
@@ -24,10 +27,21 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught:', error, info.componentStack);
   }
 
+  componentDidUpdate(_prevProps: Props, prevState: State) {
+    if (this.state.hasError && !prevState.hasError) {
+      this.containerRef.current?.focus();
+    }
+  }
+
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div
+          ref={this.containerRef}
+          role="alert"
+          tabIndex={-1}
+          className="flex min-h-screen items-center justify-center bg-gray-50 outline-none"
+        >
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900">
               Something went wrong

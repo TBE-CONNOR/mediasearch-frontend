@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, useLocation, Navigate, Link } from 'react-router';
 import { useAuth } from '@/auth/useAuth';
 import { useAuthStore } from '@/store/authStore';
 import { Footer } from '@/components/Footer';
@@ -9,17 +9,32 @@ export function SignInPage() {
   const [password, setPassword] = useState('');
   const { signIn, loading, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const idToken = useAuthStore((s) => s.idToken);
+  const authReady = useAuthStore((s) => s.authReady);
+  const from = (location.state as { from?: string })?.from || '/dashboard';
 
   useEffect(() => {
     useAuthStore.getState().setAuthError(null);
   }, []);
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50" role="status" aria-label="Loading">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500" />
+      </div>
+    );
+  }
+
+  if (idToken) return <Navigate to="/dashboard" replace />;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     void (async () => {
       try {
         await signIn(email, password);
-        await navigate('/dashboard', { replace: true });
+        await navigate(from, { replace: true });
       } catch {
         // error state set by hook
       }
@@ -43,6 +58,7 @@ export function SignInPage() {
                 id="signin-email"
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
@@ -57,6 +73,7 @@ export function SignInPage() {
                 id="signin-password"
                 type="password"
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"

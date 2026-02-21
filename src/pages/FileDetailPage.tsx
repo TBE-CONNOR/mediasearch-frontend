@@ -8,6 +8,7 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react';
+import { isAxiosError } from 'axios';
 import { getFile, deleteFile, getDownloadUrl } from '@/api/files';
 import type { ProcessingStatus } from '@/types/domain';
 import { isTerminalStatus, formatDateTime, getPollingInterval } from '@/utils/fileUtils';
@@ -26,7 +27,7 @@ export function FileDetailPage() {
 
   const {
     data: file,
-    isLoading,
+    isPending,
     error,
     refetch,
   } = useQuery({
@@ -56,21 +57,29 @@ export function FileDetailPage() {
     },
   });
 
-  if (isLoading) {
+  if (isPending) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center" role="status" aria-label="Loading file details">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
       </div>
     );
   }
 
+  const is404 = error && isAxiosError(error) && error.response?.status === 404;
+
   if (error || !file) {
     return (
       <div className="p-6">
         <div className="mx-auto max-w-2xl">
-          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
-            <p>{error ? 'Failed to load file details.' : 'File not found.'}</p>
-            {error && (
+          <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+            <p>
+              {is404
+                ? 'File not found. It may have been deleted.'
+                : error
+                  ? 'Failed to load file details.'
+                  : 'File not found.'}
+            </p>
+            {error && !is404 && (
               <button
                 type="button"
                 onClick={() => void refetch()}

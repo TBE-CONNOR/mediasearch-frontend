@@ -114,7 +114,7 @@ function MediaPreview({
   if (loading || (!mediaUrl && !imgError && contentType !== 'document')) {
     return (
       <div className="flex aspect-video items-center justify-center bg-gray-100">
-        <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+        <div className="h-8 w-8 motion-safe:animate-pulse rounded bg-gray-200" />
       </div>
     );
   }
@@ -134,10 +134,9 @@ function MediaPreview({
 
   if (contentType === 'video' && mediaUrl) {
     return (
-      <div
-        className="aspect-video bg-black"
-        onClick={(e) => e.preventDefault()}
-      >
+      <div className="aspect-video bg-black">
+        {/* User-uploaded media — no caption tracks available */}
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           src={mediaUrl}
           controls
@@ -150,11 +149,9 @@ function MediaPreview({
 
   if (contentType === 'audio' && mediaUrl) {
     return (
-      <div
-        className="flex aspect-video flex-col items-center justify-center gap-3 bg-gray-100"
-        onClick={(e) => e.preventDefault()}
-      >
+      <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-gray-100">
         <Music className="h-10 w-10 text-gray-400" />
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio
           controls
           src={mediaUrl}
@@ -176,6 +173,11 @@ function MediaPreview({
   );
 }
 
+/** Whether media type has interactive controls that conflict with a parent link */
+function isInteractiveMedia(contentType: string): boolean {
+  return contentType === 'video' || contentType === 'audio';
+}
+
 function MediaCard({
   citation,
   mediaUrl,
@@ -189,18 +191,28 @@ function MediaCard({
   const fileName = citation.file.file_name ?? citation.source_file;
   const score = citation.rerank_score;
   const isLong = citation.text_preview.length > GALLERY_PREVIEW_LIMIT;
+  const hasControls = isInteractiveMedia(citation.content_type);
 
   return (
-    <Link
-      to={`/files/${citation.file.file_id}`}
-      className="block overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-    >
-      <MediaPreview
-        contentType={citation.content_type}
-        mediaUrl={mediaUrl}
-        fileName={fileName}
-        loading={loading}
-      />
+    <div className="relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md">
+      {/* Media preview — sits above the stretched link so controls are interactive */}
+      {hasControls ? (
+        <div className="relative z-10">
+          <MediaPreview
+            contentType={citation.content_type}
+            mediaUrl={mediaUrl}
+            fileName={fileName}
+            loading={loading}
+          />
+        </div>
+      ) : (
+        <MediaPreview
+          contentType={citation.content_type}
+          mediaUrl={mediaUrl}
+          fileName={fileName}
+          loading={loading}
+        />
+      )}
 
       <div className="p-3">
         {/* Filename + score */}
@@ -224,16 +236,22 @@ function MediaCard({
         {isLong && (
           <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              setExpanded((v) => !v);
-            }}
-            className="mt-1 text-xs text-blue-600 hover:text-blue-800"
+            onClick={() => setExpanded((v) => !v)}
+            className="relative z-10 mt-1 text-xs text-blue-600 hover:text-blue-800"
           >
             {expanded ? 'Show less' : 'Read more'}
           </button>
         )}
       </div>
-    </Link>
+
+      {/* Stretched link — covers the whole card but sits below interactive elements */}
+      <Link
+        to={`/files/${citation.file.file_id}`}
+        className="absolute inset-0 z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        aria-label={`View ${fileName} details`}
+      >
+        <span className="sr-only">View file details</span>
+      </Link>
+    </div>
   );
 }

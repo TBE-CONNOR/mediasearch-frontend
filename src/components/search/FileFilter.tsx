@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useId } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
 import type { FileItem } from '@/api/files';
 
@@ -13,8 +13,11 @@ export function FileFilter({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
 
   useEffect(() => {
+    if (!open) return;
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -29,7 +32,15 @@ export function FileFilter({
       document.removeEventListener('mousedown', handleClick);
       document.removeEventListener('keydown', handleKey);
     };
-  }, []);
+  }, [open]);
+
+  // Focus first checkbox when dropdown opens
+  useEffect(() => {
+    if (open && listRef.current) {
+      const first = listRef.current.querySelector<HTMLInputElement>('input[type="checkbox"]');
+      first?.focus();
+    }
+  }, [open]);
 
   const toggle = (id: string) => {
     onChange(
@@ -44,8 +55,9 @@ export function FileFilter({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        aria-haspopup="true"
+        aria-haspopup="listbox"
         aria-expanded={open}
+        aria-controls={open ? listId : undefined}
         className="inline-flex items-center gap-1.5 rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
       >
         <Filter className="h-3.5 w-3.5" />
@@ -67,6 +79,8 @@ export function FileFilter({
 
       {open && (
         <div
+          ref={listRef}
+          id={listId}
           role="group"
           aria-label="Filter by file"
           className="absolute left-0 top-full z-10 mt-1 max-h-52 w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"

@@ -1,5 +1,9 @@
 import { Link } from 'react-router';
 
+const CONTACT_EMAIL = 'boetigsolutions@gmail.com';
+const CONTACT_PHONE = '(443) 333-0998';
+const CONTACT_PHONE_HREF = 'tel:+14433330998';
+
 const LEGAL_LINKS = [
   { to: '/legal#privacy', label: 'Privacy Policy' },
   { to: '/legal#terms', label: 'Terms of Service' },
@@ -25,16 +29,16 @@ export function Footer() {
             </Link>
           ))}
           <a
-            href="mailto:boetigsolutions@gmail.com"
+            href={`mailto:${CONTACT_EMAIL}`}
             className="text-sm text-gray-500 hover:text-gray-700"
           >
-            boetigsolutions@gmail.com
+            {CONTACT_EMAIL}
           </a>
           <a
-            href="tel:+14433330998"
+            href={CONTACT_PHONE_HREF}
             className="text-sm text-gray-500 hover:text-gray-700"
           >
-            (443) 333-0998
+            {CONTACT_PHONE}
           </a>
         </nav>
       </div>

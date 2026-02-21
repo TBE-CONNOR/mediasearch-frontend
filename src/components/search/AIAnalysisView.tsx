@@ -52,8 +52,8 @@ export function AIAnalysisView({
           Sources ({data.citations.length})
         </h2>
         <div className="space-y-3">
-          {data.citations.map((c) => (
-            <CitationCard key={c.source_file} citation={c} />
+          {data.citations.map((c, i) => (
+            <CitationCard key={c.source_uri || `${c.source_file}-${i}`} citation={c} />
           ))}
         </div>
       </div>

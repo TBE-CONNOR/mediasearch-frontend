@@ -47,6 +47,7 @@ export function UploadPage() {
 
         <div
           {...getRootProps()}
+          aria-label="File upload area — drag and drop or click to browse"
           className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors ${
             isDragActive
               ? 'border-blue-500 bg-blue-50'

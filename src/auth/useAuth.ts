@@ -61,6 +61,11 @@ export function useAuth() {
     cognitoClient.signOut();
     useAuthStore.getState().logout();
     queryClient.clear();
+    // Hard redirect — ProtectedRoute's <Navigate to="/sign-in"> races with
+    // React Router's navigate() when auth state is cleared synchronously.
+    // A full page navigation is actually ideal for sign-out: it guarantees
+    // a clean slate (no stale component state, no leaked subscriptions).
+    window.location.href = '/';
   }, [queryClient]);
 
   return { signIn, signUp, confirmSignUp, signOut, loading, error };

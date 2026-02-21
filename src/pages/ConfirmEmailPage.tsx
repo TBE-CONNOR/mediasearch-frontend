@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router';
+import { useNavigate, useLocation, Link, Navigate } from 'react-router';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/auth/useAuth';
 import { useAuthStore } from '@/store/authStore';
 import { Footer } from '@/components/Footer';
@@ -13,10 +14,24 @@ export function ConfirmEmailPage() {
   const [code, setCode] = useState('');
   const { confirmSignUp, loading, error } = useAuth();
   const navigate = useNavigate();
+  const idToken = useAuthStore((s) => s.idToken);
+  const authReady = useAuthStore((s) => s.authReady);
 
   useEffect(() => {
     useAuthStore.getState().setAuthError(null);
   }, []);
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading">
+        <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
+  if (idToken) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

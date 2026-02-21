@@ -1,5 +1,5 @@
 import { api } from '@/api/axios';
-import { listFiles } from '@/api/files';
+import { getFile } from '@/api/files';
 import type { FileItem } from '@/api/files';
 import type { Tier } from '@/types/domain';
 
@@ -58,12 +58,32 @@ const stripExt = (s: string) => s.replace(/\.[^.]+$/, '');
 interface SearchRequest {
   query: string;
   file_ids?: string[];
+  top_k?: number;
+  top_n?: number;
+  rerank?: boolean;
+  generate?: boolean;
+}
+
+/**
+ * Fetch only the files referenced in search citations.
+ * Used as a lightweight fallback when the caller does not pass `cachedFiles`.
+ */
+async function fetchCitationFiles(
+  citations: Citation[],
+): Promise<FileItem[]> {
+  const uniqueIds = [...new Set(citations.map((c) => stripExt(c.source_file)))];
+  const results = await Promise.allSettled(uniqueIds.map((id) => getFile(id)));
+  return results
+    .filter((r): r is PromiseFulfilledResult<FileItem> => r.status === 'fulfilled')
+    .map((r) => r.value);
 }
 
 /**
  * Search files and return enriched citations.
- * Pass `cachedFiles` to skip the redundant listFiles() call when the caller
+ * Pass `cachedFiles` to skip redundant file fetches when the caller
  * already has file data (e.g. from a TanStack Query cache).
+ * Without `cachedFiles`, only the files referenced in citations are fetched
+ * instead of the full file list — much lighter for users with many files.
  */
 export async function searchFiles(
   query: string,
@@ -72,12 +92,24 @@ export async function searchFiles(
   const body: SearchRequest = { query };
   if (options?.fileIds?.length) body.file_ids = options.fileIds;
 
-  const [searchRes, files] = await Promise.all([
-    api.post<SearchResponse>('/search', body),
-    options?.cachedFiles ? Promise.resolve(options.cachedFiles) : listFiles(),
-  ]);
+  if (options?.cachedFiles) {
+    // Fast path: run search and enrichment in parallel with cached data
+    const searchRes = await api.post<SearchResponse>('/search', body);
+    const result = searchRes.data;
+    const files = options.cachedFiles;
 
+    const enrichedCitations: EnrichedCitation[] = result.citations.map((c) => ({
+      ...c,
+      file: files.find((f) => f.file_id === stripExt(c.source_file)) ?? null,
+    }));
+
+    return { ...result, citations: enrichedCitations };
+  }
+
+  // Fallback: search first, then fetch only the referenced files
+  const searchRes = await api.post<SearchResponse>('/search', body);
   const result = searchRes.data;
+  const files = await fetchCitationFiles(result.citations);
 
   const enrichedCitations: EnrichedCitation[] = result.citations.map((c) => ({
     ...c,

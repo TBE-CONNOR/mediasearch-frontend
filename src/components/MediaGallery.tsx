@@ -39,7 +39,7 @@ export function MediaGalleryView({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {uniqueCitations.map((c) => (
         <MediaCard
           key={c.file.file_id}
@@ -188,9 +188,7 @@ function MediaCard({
         to={`/files/${citation.file.file_id}`}
         className="absolute inset-0 z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
         aria-label={`View ${fileName} details`}
-      >
-        <span className="sr-only">View file details</span>
-      </Link>
+      />
     </div>
   );
 }

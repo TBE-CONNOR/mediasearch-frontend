@@ -65,12 +65,12 @@ export function LandingFooter() {
 
           {/* Product */}
           <div>
-            <h4 className="mb-6 text-lg font-semibold text-white">Product</h4>
+            <h3 className="mb-6 text-lg font-semibold text-white">Product</h3>
             <ul className="space-y-3">
               <li>
                 <a
                   href="#features"
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Features
                 </a>
@@ -78,7 +78,7 @@ export function LandingFooter() {
               <li>
                 <a
                   href="#pricing"
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Pricing
                 </a>
@@ -86,7 +86,7 @@ export function LandingFooter() {
               <li>
                 <Link
                   to="/sign-up"
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Sign Up
                 </Link>
@@ -96,12 +96,12 @@ export function LandingFooter() {
 
           {/* Legal */}
           <div>
-            <h4 className="mb-6 text-lg font-semibold text-white">Legal</h4>
+            <h3 className="mb-6 text-lg font-semibold text-white">Legal</h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/legal#privacy"
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Privacy Policy
                 </Link>
@@ -109,7 +109,7 @@ export function LandingFooter() {
               <li>
                 <Link
                   to="/legal#terms"
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Terms of Service
                 </Link>
@@ -117,7 +117,7 @@ export function LandingFooter() {
               <li>
                 <Link
                   to="/legal#refund"
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   Refund Policy
                 </Link>
@@ -127,13 +127,13 @@ export function LandingFooter() {
 
           {/* Contact */}
           <div>
-            <h4 className="mb-6 text-lg font-semibold text-white">Contact</h4>
+            <h3 className="mb-6 text-lg font-semibold text-white">Contact</h3>
             <ul className="space-y-4">
               <li className="flex items-center space-x-3">
                 <Mail size={18} className="text-blue-400" />
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   {CONTACT_EMAIL}
                 </a>
@@ -142,7 +142,7 @@ export function LandingFooter() {
                 <Phone size={18} className="text-blue-400" />
                 <a
                   href={CONTACT_PHONE_HREF}
-                  className="text-zinc-400 transition-colors hover:text-blue-400"
+                  className="rounded text-zinc-400 transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   {CONTACT_PHONE}
                 </a>

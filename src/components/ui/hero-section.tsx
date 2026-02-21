@@ -105,20 +105,14 @@ export function HeroSection({
       {!reducedMotion && (
         <motion.div
           className="pointer-events-none absolute inset-0 z-[1]"
-          style={{
-            background: `radial-gradient(600px circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(59,130,246,0.08), transparent 70%)`,
-          }}
-        >
-          <motion.div
-            className="h-full w-full"
-            style={
-              {
-                '--mx': springX,
-                '--my': springY,
-              } as React.CSSProperties
-            }
-          />
-        </motion.div>
+          style={
+            {
+              '--mx': springX,
+              '--my': springY,
+              background: `radial-gradient(600px circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(59,130,246,0.08), transparent 70%)`,
+            } as React.CSSProperties
+          }
+        />
       )}
 
       {/* Click ripples */}
@@ -136,7 +130,7 @@ export function HeroSection({
         ))}
 
       {/* Content */}
-      <section className="relative z-10 mx-auto max-w-screen-xl px-4 pt-28 pb-12 md:px-8">
+      <section className="relative z-10 mx-auto max-w-screen-xl px-4 pt-36 pb-12 md:pt-28 md:px-8">
         <div className="mx-auto max-w-3xl space-y-5 text-center leading-0 lg:leading-5">
           {/* Badge */}
           {badge && (
@@ -150,7 +144,7 @@ export function HeroSection({
           )}
 
           {/* Title — word-by-word blur-in */}
-          <h1 className="mx-auto text-4xl font-bold tracking-tighter text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,255,255,0.00)_202.08%)] md:text-6xl">
+          <h1 className="mx-auto text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,255,255,0.00)_202.08%)] md:text-4xl lg:text-6xl">
             {reducedMotion
               ? title
               : titleWords.map((word, i) => (
@@ -173,7 +167,7 @@ export function HeroSection({
 
           {/* Subtitle with gradient span */}
           <motion.h2
-            className="mx-auto text-4xl font-bold tracking-tighter text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,255,255,0.00)_202.08%)] md:text-6xl"
+            className="mx-auto text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,255,255,0.00)_202.08%)] md:text-4xl lg:text-6xl"
             initial={reducedMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.7, delay: reducedMotion ? 0 : 0.3 }}

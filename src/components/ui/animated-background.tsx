@@ -63,8 +63,7 @@ export default function AnimatedBackground({
         'relative inline-flex',
         (child as ReactElement<{ className?: string }>).props.className,
       ),
-      'aria-selected': activeId === id,
-      'data-checked': activeId === id ? 'true' : 'false',
+      'data-active': activeId === id ? 'true' : 'false',
       ...interactionProps,
       children: (
         <>

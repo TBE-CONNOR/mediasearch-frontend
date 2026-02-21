@@ -44,7 +44,7 @@ export function FilesPage() {
         </div>
 
         {isPending && (
-          <div className="flex items-center justify-center py-20">
+          <div role="status" aria-label="Loading files" className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
           </div>
         )}

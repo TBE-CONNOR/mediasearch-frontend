@@ -1,5 +1,5 @@
 import axios, { isAxiosError } from 'axios';
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
 import { AWS_CONFIG, TIER_API_KEYS } from '@/config/aws';
 import { TOKEN_REFRESH_BUFFER_MS } from '@/config/constants';
 import { cognitoClient } from '@/auth/CognitoClient';
@@ -65,7 +65,10 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use(
   (res) => res,
-  async (err: AxiosError) => {
+  async (err: unknown) => {
+    if (!isAxiosError(err)) {
+      return Promise.reject(err instanceof Error ? err : new Error('Request failed'));
+    }
     const config = err.config;
     if (err.response?.status === 401 && config && !retriedConfigs.has(config)) {
       retriedConfigs.add(config);
@@ -77,11 +80,9 @@ api.interceptors.response.use(
         return api(config);
       } catch {
         // Refresh failed -- doRefresh already called logout()
-        if (isAxiosError(err)) return Promise.reject(err);
-        return Promise.reject(new Error('Token refresh failed'));
+        return Promise.reject(err);
       }
     }
-    if (isAxiosError(err)) return Promise.reject(err);
-    return Promise.reject(new Error('Request failed'));
+    return Promise.reject(err);
   },
 );

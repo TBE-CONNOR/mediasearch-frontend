@@ -44,12 +44,12 @@ export function LegalPage() {
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
-      <header className="border-b border-gray-200 bg-white px-4 py-4">
+    <div className="flex min-h-screen flex-col bg-[#09090b]">
+      <header className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-4">
         <div className="mx-auto max-w-4xl">
           <Link
             to="/"
-            className="text-xl font-bold text-gray-900 hover:text-blue-600"
+            className="text-xl font-bold text-white hover:text-blue-400"
           >
             MediaSearch
           </Link>
@@ -58,11 +58,11 @@ export function LegalPage() {
 
       <main className="flex flex-1 flex-col px-4 py-8">
         <div className="mx-auto w-full max-w-4xl">
-          <h1 className="mb-6 text-3xl font-bold text-gray-900">Legal</h1>
+          <h1 className="mb-6 text-3xl font-bold text-white">Legal</h1>
 
           {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- roving tabIndex on child tabs */}
           <div
-            className="mb-8 flex gap-1 overflow-x-auto rounded-lg bg-gray-200 p-1"
+            className="mb-8 flex gap-1 overflow-x-auto rounded-lg bg-zinc-800 p-1"
             role="tablist"
             aria-label="Legal documents"
             onKeyDown={(e) => {
@@ -86,10 +86,10 @@ export function LegalPage() {
                 aria-selected={activeTab === tab.id}
                 aria-controls={`panel-${tab.id}`}
                 onClick={() => handleTabClick(tab.id)}
-                className={`whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                className={`whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] ${
                   activeTab === tab.id
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 {tab.label}
@@ -101,9 +101,9 @@ export function LegalPage() {
             id={`panel-${activeTab}`}
             role="tabpanel"
             aria-labelledby={`tab-${activeTab}`}
-            className="rounded-lg bg-white p-6 shadow-sm sm:p-10"
+            className="rounded-lg bg-zinc-900/50 p-6 sm:p-10"
           >
-            <article className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline">
+            <article className="prose prose-invert max-w-none prose-headings:text-white prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline">
               <ReactMarkdown>{currentTab.content}</ReactMarkdown>
             </article>
           </div>

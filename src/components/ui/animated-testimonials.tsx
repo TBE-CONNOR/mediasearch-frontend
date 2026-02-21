@@ -111,6 +111,9 @@ export function AnimatedTestimonials({
           </div>
         </div>
         <div className="flex flex-col justify-between py-4" aria-live="polite">
+          <span className="sr-only">
+            Testimonial {active + 1} of {testimonials.length}
+          </span>
           <motion.div
             key={active}
             initial={reducedMotion ? false : { y: 20, opacity: 0 }}

@@ -39,7 +39,7 @@ export function SearchPage() {
   const [answerOpen, setAnswerOpen] = useState(true);
   const [viewMode, setViewMode] = useState<'gallery' | 'analysis'>('gallery');
 
-  const { data: files } = useQuery({
+  const { data: files, isError: filesError } = useQuery({
     queryKey: ['files'],
     queryFn: () => listFiles(),
     refetchInterval: hasActiveUploads
@@ -130,6 +130,9 @@ export function SearchPage() {
             selected={selectedFileIds}
             onChange={setSelectedFileIds}
           />
+        )}
+        {filesError && (
+          <p className="mt-2 text-xs text-amber-400">Could not load file list for filtering.</p>
         )}
 
         {/* Processing awareness banner — two phases */}

@@ -55,7 +55,7 @@ export function FileFilter({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        aria-haspopup="listbox"
+        aria-haspopup="true"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
         className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"

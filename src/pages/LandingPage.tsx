@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useAuthStore } from '@/store/authStore';
@@ -25,7 +26,11 @@ export function LandingPage() {
     }
   }, [authReady, idToken, navigate]);
 
-  if (!authReady) return null;
+  if (!authReady) return (
+    <div className="flex min-h-screen items-center justify-center bg-[#09090b]">
+      <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
+    </div>
+  );
   if (idToken) return null;
 
   return (
@@ -74,6 +79,7 @@ export function LandingPage() {
               <img
                 src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=80"
                 alt="MediaSearch dashboard mockup"
+                loading="lazy"
                 className="mx-auto h-full w-full rounded-2xl object-cover object-left-top"
                 draggable={false}
               />

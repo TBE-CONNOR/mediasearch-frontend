@@ -23,20 +23,20 @@ export function Footer() {
             <Link
               key={link.to}
               to={link.to}
-              className="text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+              className="rounded text-sm text-zinc-500 transition-colors hover:text-zinc-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
             >
               {link.label}
             </Link>
           ))}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+            className="rounded text-sm text-zinc-500 transition-colors hover:text-zinc-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
           >
             {CONTACT_EMAIL}
           </a>
           <a
             href={CONTACT_PHONE_HREF}
-            className="text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+            className="rounded text-sm text-zinc-500 transition-colors hover:text-zinc-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
           >
             {CONTACT_PHONE}
           </a>

@@ -89,10 +89,21 @@ async function fetchCitationFiles(
  */
 export async function searchFiles(
   query: string,
-  options?: { fileIds?: string[]; cachedFiles?: FileItem[] },
+  options?: {
+    fileIds?: string[];
+    cachedFiles?: FileItem[];
+    topK?: number;
+    topN?: number;
+    rerank?: boolean;
+    generate?: boolean;
+  },
 ): Promise<EnrichedSearchResponse> {
   const body: SearchRequest = { query };
   if (options?.fileIds?.length) body.file_ids = options.fileIds;
+  if (options?.topK != null) body.top_k = options.topK;
+  if (options?.topN != null) body.top_n = options.topN;
+  if (options?.rerank != null) body.rerank = options.rerank;
+  if (options?.generate != null) body.generate = options.generate;
 
   if (options?.cachedFiles) {
     // Fast path: run search and enrichment in parallel with cached data

@@ -29,7 +29,7 @@ function priceEnv(key: string): string | null {
   return val;
 }
 
-export const TIERS: PricingTier[] = [
+export const TIERS: readonly PricingTier[] = [
   {
     id: 'free',
     name: 'Free',

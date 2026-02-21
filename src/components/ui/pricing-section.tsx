@@ -9,7 +9,7 @@ import { GlowingEffect } from '@/components/ui/glowing-effect';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface PricingSectionProps {
-  tiers: PricingTier[];
+  tiers: readonly PricingTier[];
   className?: string;
 }
 

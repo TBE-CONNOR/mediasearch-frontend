@@ -30,6 +30,8 @@ export function SubscriptionPage() {
   // After Stripe Checkout redirect: refresh JWT to pick up new tier, then refetch subscription
   useEffect(() => {
     if (!new URLSearchParams(location.search).get('session_id')) return;
+    // Clean up the query param so a page refresh won't re-trigger
+    window.history.replaceState({}, '', location.pathname);
     const refreshToken = useAuthStore.getState().refreshToken;
     if (refreshToken) {
       void cognitoClient
@@ -55,7 +57,7 @@ export function SubscriptionPage() {
     } else {
       void queryClient.invalidateQueries({ queryKey: ['subscription'] });
     }
-  }, [location.search, queryClient]);
+  }, [location.search, location.pathname, queryClient]);
 
   const {
     data,
@@ -174,7 +176,7 @@ export function SubscriptionPage() {
           )}
 
           {portalMut.isError && (
-            <p className="mt-3 text-sm text-red-400">
+            <p role="alert" className="mt-3 text-sm text-red-400">
               {isAxiosError(portalMut.error) &&
               portalMut.error.response?.status === 404
                 ? 'No subscription found. Subscribe to a plan to manage billing.'

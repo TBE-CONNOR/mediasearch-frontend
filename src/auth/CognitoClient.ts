@@ -74,6 +74,16 @@ export const cognitoClient = {
     });
   },
 
+  resendConfirmationCode(email: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const user = new CognitoUser({ Username: email, Pool: userPool });
+      user.resendConfirmationCode((err) => {
+        if (err) return reject(toError(err));
+        resolve();
+      });
+    });
+  },
+
   confirmSignUp(email: string, code: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const user = new CognitoUser({ Username: email, Pool: userPool });

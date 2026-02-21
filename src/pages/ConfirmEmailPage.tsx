@@ -12,7 +12,8 @@ export function ConfirmEmailPage() {
     state && typeof state.email === 'string' ? state.email : '';
   const [email, setEmail] = useState(emailFromState);
   const [code, setCode] = useState('');
-  const { confirmSignUp, loading, error } = useAuth();
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
+  const { confirmSignUp, resendCode, loading, error } = useAuth();
   const navigate = useNavigate();
   const idToken = useAuthStore((s) => s.idToken);
   const authReady = useAuthStore((s) => s.authReady);
@@ -87,6 +88,7 @@ export function ConfirmEmailPage() {
                 pattern="[0-9]*"
                 autoComplete="one-time-code"
                 required
+                maxLength={6}
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="123456"
@@ -107,11 +109,34 @@ export function ConfirmEmailPage() {
             </button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-zinc-400">
-            <Link to="/sign-in" className="text-blue-400 hover:underline">
-              Back to Sign In
-            </Link>
-          </p>
+          <div className="mt-4 space-y-2 text-center text-sm">
+            <button
+              type="button"
+              disabled={loading || !email}
+              onClick={() => {
+                setResendMsg(null);
+                void (async () => {
+                  try {
+                    await resendCode(email);
+                    setResendMsg('A new code has been sent to your email.');
+                  } catch {
+                    // error state set by hook
+                  }
+                })();
+              }}
+              className="text-blue-400 hover:underline disabled:opacity-50"
+            >
+              Didn&apos;t receive a code? Resend
+            </button>
+            {resendMsg && (
+              <p role="status" className="text-sm text-green-400">{resendMsg}</p>
+            )}
+            <p className="text-zinc-400">
+              <Link to="/sign-in" className="text-blue-400 hover:underline">
+                Back to Sign In
+              </Link>
+            </p>
+          </div>
         </div>
       </main>
       <Footer />

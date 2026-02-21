@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import type { Tier } from '@/types/domain';
 
-export type { Tier };
-
 interface AuthState {
   idToken: string | null;
   refreshToken: string | null;

@@ -55,6 +55,12 @@ export function useAuth() {
     [],
   );
 
+  const resendCode = useCallback(
+    (email: string) =>
+      withAuthState(() => cognitoClient.resendConfirmationCode(email)),
+    [],
+  );
+
   const signOut = useCallback(() => {
     cleanupUploads();
     useSearchStore.getState().clear();
@@ -68,5 +74,5 @@ export function useAuth() {
     window.location.href = '/';
   }, [queryClient]);
 
-  return { signIn, signUp, confirmSignUp, signOut, loading, error };
+  return { signIn, signUp, confirmSignUp, resendCode, signOut, loading, error };
 }

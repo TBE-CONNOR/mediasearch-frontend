@@ -62,20 +62,34 @@ const ReactQueryDevtools = import.meta.env.DEV
 
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    const applySession = (result: Awaited<ReturnType<typeof cognitoClient.restoreSession>>) => {
+      if (!result) return;
+      useAuthStore.getState().setTokens({
+        idToken: result.idToken,
+        expiresAt: result.expiresAt,
+        refreshToken: result.refreshToken,
+      });
+      useAuthStore.getState().setUser({
+        email: result.email,
+        sub: result.sub,
+        tier: result.tier,
+      });
+    };
+
     cognitoClient
       .restoreSession()
-      .then((result) => {
+      .then(async (result) => {
         if (result && result.expiresAt > Date.now()) {
-          useAuthStore.getState().setTokens({
-            idToken: result.idToken,
-            expiresAt: result.expiresAt,
-            refreshToken: result.refreshToken,
-          });
-          useAuthStore.getState().setUser({
-            email: result.email,
-            sub: result.sub,
-            tier: result.tier,
-          });
+          applySession(result);
+        } else if (result) {
+          // Token expired but refresh token exists — attempt refresh
+          try {
+            const refreshed = await cognitoClient.refresh(result.refreshToken);
+            applySession(refreshed);
+          } catch {
+            // Refresh failed — clear stale session so user is prompted to sign in
+            cognitoClient.signOut();
+          }
         }
       })
       .catch((err: unknown) => {

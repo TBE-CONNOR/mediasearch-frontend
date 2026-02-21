@@ -51,6 +51,11 @@ const LegalPage = lazy(() =>
 const LandingPage = lazy(() =>
   import('@/pages/LandingPage').then((m) => ({ default: m.LandingPage })),
 );
+const AuthCallbackPage = lazy(() =>
+  import('@/pages/AuthCallbackPage').then((m) => ({
+    default: m.AuthCallbackPage,
+  })),
+);
 
 const ReactQueryDevtools = import.meta.env.DEV
   ? lazy(() =>
@@ -113,6 +118,7 @@ export default function App() {
                 <Route path="/sign-in" element={<SignInPage />} />
                 <Route path="/sign-up" element={<SignUpPage />} />
                 <Route path="/confirm-email" element={<ConfirmEmailPage />} />
+                <Route path="/auth/callback" element={<AuthCallbackPage />} />
                 <Route path="/legal" element={<LegalPage />} />
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AppLayout />}>

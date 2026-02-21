@@ -28,6 +28,10 @@ export const AWS_CONFIG = {
   userPoolId: env('VITE_COGNITO_USER_POOL_ID'),
   userPoolClientId: env('VITE_COGNITO_CLIENT_ID'),
   apiBaseUrl: env('VITE_API_BASE_URL'),
+  /** Cognito hosted UI domain — required for Google OAuth */
+  cognitoDomain: (import.meta.env.VITE_COGNITO_DOMAIN as string | undefined) ?? '',
+  /** App base URL for OAuth redirect_uri */
+  appUrl: (import.meta.env.VITE_APP_URL as string | undefined) ?? window.location.origin,
 };
 
 // Public rate-limiting keys — NOT secrets. Safe to expose in client bundle.

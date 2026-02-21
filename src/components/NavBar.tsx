@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
 import { LogOut, Menu, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import { useAuth } from '@/auth/useAuth';
 import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]';
 
 const PRIMARY_LINKS = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -27,12 +31,23 @@ export function NavBar() {
   const tier = useAuthStore((s) => s.tier);
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   const closeMobileMenu = useCallback(() => {
     setMobileOpen(false);
     toggleRef.current?.focus();
+  }, []);
+
+  // Scroll detection for glassmorphism intensity
+  useEffect(() => {
+    const handleScroll = () => {
+      const shouldBeScrolled = window.scrollY > 20;
+      setScrolled((prev) => (prev === shouldBeScrolled ? prev : shouldBeScrolled));
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Focus trap + Escape handler for mobile menu
@@ -67,83 +82,122 @@ export function NavBar() {
   }, [mobileOpen, closeMobileMenu]);
 
   return (
-    <nav aria-label="Main navigation" className="border-b border-zinc-800 bg-[#09090b]">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex h-14 items-center justify-between">
-          {/* Brand */}
-          <Link to="/" className="text-lg font-bold text-white">
-            MediaSearch
-          </Link>
+    <nav
+      className={cn(
+        'fixed top-0 z-50 w-full transition-[background-color,border-color,backdrop-filter] duration-300',
+        scrolled
+          ? 'border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-lg'
+          : 'bg-[#09090b]/40 backdrop-blur-sm',
+      )}
+      aria-label="Main navigation"
+    >
+      {/* Accent gradient line */}
+      <div className="h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-          {/* Primary nav — always visible */}
-          <div className="flex items-center gap-0.5 sm:gap-1">
-            {PRIMARY_LINKS.map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                aria-current={isActive(to, location.pathname) ? 'page' : undefined}
-                className={`rounded-md px-1.5 py-1 text-xs font-medium transition-colors sm:px-3 sm:py-1.5 sm:text-sm ${
-                  isActive(to, location.pathname)
-                    ? 'bg-blue-600/10 text-blue-400'
-                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-16">
+        {/* Brand — split color wordmark */}
+        <Link to="/" className={cn('flex items-center gap-2 rounded text-lg font-bold', focusRing)}>
+          <span className="text-white">Media</span>
+          <span className="-ml-2 text-blue-400">Search</span>
+        </Link>
 
-            {/* Secondary nav — desktop only */}
-            {SECONDARY_LINKS.map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                aria-current={isActive(to, location.pathname) ? 'page' : undefined}
-                className={`hidden rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:inline-flex ${
-                  isActive(to, location.pathname)
-                    ? 'bg-blue-600/10 text-blue-400'
-                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Right side */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase sm:px-2.5 sm:text-xs ${TIER_COLORS[tier ?? 'free']}`}>
-              {TIER_LABELS[tier ?? 'free']}
-            </span>
-            <button
-              type="button"
-              onClick={signOut}
-              className="hidden items-center gap-1 rounded px-2 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300 sm:inline-flex"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </button>
-            {/* Mobile overflow menu button */}
-            <button
-              ref={toggleRef}
-              type="button"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={mobileOpen}
-              className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white sm:hidden"
-            >
-              {mobileOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
+        {/* Nav group — pill container */}
+        <div className="flex items-center gap-0.5 rounded-full border border-zinc-800/60 bg-zinc-900/50 px-1 py-0.5 sm:gap-1 sm:px-1.5 sm:py-1">
+          {/* Primary links — always visible */}
+          {PRIMARY_LINKS.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              aria-current={isActive(to, location.pathname) ? 'page' : undefined}
+              className={cn(
+                'rounded-full px-1.5 py-1 text-xs font-medium transition-colors sm:px-3 sm:py-1 sm:text-sm',
+                isActive(to, location.pathname)
+                  ? 'bg-blue-600/10 text-blue-400'
+                  : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
+                focusRing,
               )}
-            </button>
-          </div>
+            >
+              {label}
+            </Link>
+          ))}
+
+          {/* Secondary links — desktop only, inside same pill */}
+          {SECONDARY_LINKS.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              aria-current={isActive(to, location.pathname) ? 'page' : undefined}
+              className={cn(
+                'hidden rounded-full px-3 py-1 text-sm font-medium transition-colors sm:inline-flex',
+                isActive(to, location.pathname)
+                  ? 'bg-blue-600/10 text-blue-400'
+                  : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
+                focusRing,
+              )}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Tier badge */}
+          <span className={cn(
+            'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase sm:px-2.5 sm:text-xs',
+            TIER_COLORS[tier ?? 'free'],
+          )}>
+            {TIER_LABELS[tier ?? 'free']}
+          </span>
+
+          {/* Sign Out — desktop only */}
+          <button
+            type="button"
+            onClick={signOut}
+            className={cn(
+              'hidden items-center gap-1 rounded-full px-2.5 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-800/80 hover:text-zinc-300 sm:inline-flex',
+              focusRing,
+            )}
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </button>
+
+          {/* Mobile hamburger */}
+          <button
+            ref={toggleRef}
+            type="button"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            className={cn(
+              'rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800/80 hover:text-white sm:hidden',
+              focusRing,
+            )}
+          >
+            {mobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Mobile overflow menu — full-width dropdown under nav */}
+      {/* Mobile overflow menu */}
       {mobileOpen && (
-        <div ref={menuRef} role="dialog" aria-modal="true" aria-label="More navigation options" className="border-t border-zinc-800 bg-[#09090b] sm:hidden">
+        <div
+          ref={menuRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="More navigation options"
+          className={cn(
+            'border-t border-zinc-800/60 sm:hidden',
+            scrolled
+              ? 'bg-[#09090b]/80 backdrop-blur-lg'
+              : 'bg-[#09090b]/90 backdrop-blur-md',
+          )}
+        >
           <div className="space-y-1 px-4 py-2">
             {SECONDARY_LINKS.map(({ to, label }) => (
               <Link
@@ -151,11 +205,13 @@ export function NavBar() {
                 to={to}
                 onClick={closeMobileMenu}
                 aria-current={isActive(to, location.pathname) ? 'page' : undefined}
-                className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                className={cn(
+                  'block rounded-full px-3 py-2 text-sm font-medium transition-colors',
                   isActive(to, location.pathname)
                     ? 'bg-blue-600/10 text-blue-400'
-                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
-                }`}
+                    : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
+                  focusRing,
+                )}
               >
                 {label}
               </Link>
@@ -163,7 +219,10 @@ export function NavBar() {
             <button
               type="button"
               onClick={signOut}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30"
+              className={cn(
+                'flex w-full items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30',
+                focusRing,
+              )}
             >
               <LogOut className="h-4 w-4" />
               Sign Out

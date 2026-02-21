@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { Loader2, FileText, Upload, RefreshCw } from 'lucide-react';
 import { createElement, useState } from 'react';
-import { useVideoThumbnail } from '@/hooks/useVideoThumbnail';
+import { VideoThumbnail } from '@/components/VideoThumbnail';
 import { listFiles } from '@/api/files';
 import type { FileItem, ProcessingStatus } from '@/api/files';
 import { QuotaErrorBanner } from '@/components/QuotaError';
@@ -124,8 +124,6 @@ function FileThumbnail({ file }: { file: FileItem }) {
   const isImage = file.content_type.startsWith('image/');
   const isVideo = file.content_type.startsWith('video/');
   const isCompleted = file.processing_status === 'completed';
-  const videoUrl = isVideo && isCompleted ? file.presigned_url : undefined;
-  const { thumbnail: videoThumb } = useVideoThumbnail(videoUrl);
 
   // Image thumbnail
   if (isImage && !!file.presigned_url && isCompleted && !imgError) {
@@ -141,16 +139,10 @@ function FileThumbnail({ file }: { file: FileItem }) {
     );
   }
 
-  // Video thumbnail via canvas extraction
-  if (isVideo && videoThumb) {
+  // Video thumbnail via native <video> element (no CORS needed)
+  if (isVideo && isCompleted && file.presigned_url) {
     return (
-      <div className="aspect-video bg-zinc-800">
-        <img
-          src={videoThumb}
-          alt=""
-          className="h-full w-full object-cover"
-        />
-      </div>
+      <VideoThumbnail url={file.presigned_url} contentType={file.content_type} />
     );
   }
 

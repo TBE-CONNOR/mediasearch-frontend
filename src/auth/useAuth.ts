@@ -62,6 +62,8 @@ export function useAuth() {
   );
 
   const signOut = useCallback(() => {
+    // Check for OAuth logout URL BEFORE signOut clears the flag
+    const oauthLogoutUrl = cognitoClient.getOAuthLogoutUrl();
     cleanupUploads();
     useSearchStore.getState().clear();
     cognitoClient.signOut();
@@ -71,7 +73,9 @@ export function useAuth() {
     // React Router's navigate() when auth state is cleared synchronously.
     // A full page navigation is actually ideal for sign-out: it guarantees
     // a clean slate (no stale component state, no leaked subscriptions).
-    window.location.href = '/';
+    // For OAuth sessions: redirect to Cognito /logout to clear hosted UI cookies,
+    // which then redirects back to appUrl. Without this, Cognito auto-re-authenticates.
+    window.location.href = oauthLogoutUrl ?? '/';
   }, [queryClient]);
 
   return { signIn, signUp, confirmSignUp, resendCode, signOut, loading, error };

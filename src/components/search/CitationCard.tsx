@@ -2,6 +2,7 @@ import { useState, createElement } from 'react';
 import { Link } from 'react-router';
 import { CITATION_PREVIEW_LIMIT } from '@/config/constants';
 import { getModalityIcon } from '@/utils/fileUtils';
+import { VideoThumbnail } from '@/components/VideoThumbnail';
 import type { EnrichedCitation } from '@/api/search';
 
 export function CitationCard({ citation }: { citation: EnrichedCitation }) {
@@ -19,6 +20,12 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
               src={citation.file?.presigned_url || citation.presigned_url}
               alt=""
               className="h-8 w-8 shrink-0 rounded object-cover"
+            />
+          ) : (citation.file?.presigned_url || citation.presigned_url) && citation.content_type === 'video' ? (
+            <VideoThumbnail
+              url={(citation.file?.presigned_url || citation.presigned_url)!}
+              contentType="video"
+              size="citation"
             />
           ) : (
             /* createElement avoids eslint react-hooks false positive on dynamic component */

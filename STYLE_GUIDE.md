@@ -100,11 +100,15 @@ w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-whit
 
 ### Nav Bar (authenticated)
 ```
-border-b border-zinc-800 bg-[#09090b]
+fixed top-0 z-50 w-full
+bg-[#09090b]/40 backdrop-blur-sm → bg-[#09090b]/80 backdrop-blur-lg (on scroll)
 ```
-- Active link: `bg-blue-600/10 text-blue-400`
-- Inactive link: `text-zinc-400 hover:bg-zinc-800 hover:text-white`
-- Brand text: `text-lg font-bold text-white`
+- Accent line: `h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent`
+- Brand: split-color "Media" (white) + "Search" (blue-400)
+- Nav pill: `rounded-full border border-zinc-800/60 bg-zinc-900/50`
+- Active link: `bg-blue-600/10 text-blue-400 rounded-full`
+- Inactive link: `text-zinc-400 hover:bg-zinc-800/80 hover:text-white rounded-full`
+- All interactive elements use `focusRing` utility
 
 ### Badges / Pills
 **Tier badge:** Keep existing TIER_COLORS but adapt for dark bg:

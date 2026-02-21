@@ -21,8 +21,8 @@ export function SignInPage() {
 
   if (!authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50" role="status" aria-label="Loading">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500" />
+      <div className="flex min-h-screen items-center justify-center bg-[#09090b]" role="status" aria-label="Loading">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
       </div>
     );
   }
@@ -42,16 +42,16 @@ export function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-[#09090b]">
       <main className="flex flex-1 items-center justify-center">
-        <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow">
-          <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">
+        <div className="w-full max-w-sm rounded-xl border border-zinc-800 bg-zinc-900/50 p-8">
+          <h1 className="mb-6 text-center text-2xl font-bold text-white">
             Sign In
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="signin-email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signin-email" className="block text-sm font-medium text-zinc-300">
                 Email
               </label>
               <input
@@ -61,12 +61,12 @@ export function SignInPage() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
+                className="mt-1 block w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder-zinc-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
               />
             </div>
 
             <div>
-              <label htmlFor="signin-password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="signin-password" className="block text-sm font-medium text-zinc-300">
                 Password
               </label>
               <input
@@ -76,26 +76,26 @@ export function SignInPage() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
+                className="mt-1 block w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder-zinc-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
               />
             </div>
 
             {error && (
-              <p role="alert" className="text-sm text-red-600">{error}</p>
+              <p role="alert" className="text-sm text-red-400">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-gray-600">
+          <p className="mt-4 text-center text-sm text-zinc-400">
             Don't have an account?{' '}
-            <Link to="/sign-up" className="text-blue-600 hover:underline">
+            <Link to="/sign-up" className="text-blue-400 hover:underline">
               Sign Up
             </Link>
           </p>

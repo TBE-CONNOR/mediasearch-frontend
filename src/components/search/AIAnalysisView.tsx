@@ -18,27 +18,27 @@ export function AIAnalysisView({
   return (
     <>
       {/* AI Answer (collapsible) */}
-      <div className="rounded-lg bg-white shadow-sm">
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50">
         <button
           type="button"
           onClick={onToggleAnswer}
           aria-expanded={answerOpen}
           className="flex w-full items-center justify-between px-4 py-3 text-left"
         >
-          <span className="text-sm font-medium text-gray-700">AI Answer</span>
+          <span className="text-sm font-medium text-zinc-300">AI Answer</span>
           {answerOpen ? (
-            <ChevronUp className="h-4 w-4 text-gray-400" />
+            <ChevronUp className="h-4 w-4 text-zinc-500" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <ChevronDown className="h-4 w-4 text-zinc-500" />
           )}
         </button>
         {answerOpen && (
-          <div className="border-t border-gray-100 px-4 pb-4 pt-3">
-            <p className="whitespace-pre-wrap text-sm text-gray-800">
+          <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
+            <p className="whitespace-pre-wrap text-sm text-zinc-300">
               {data.answer}
             </p>
             {isLowConfidence && (
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-zinc-500">
                 No strong matches found in your files.
               </p>
             )}
@@ -48,7 +48,7 @@ export function AIAnalysisView({
 
       {/* Citations */}
       <div>
-        <h2 className="mb-3 text-sm font-medium text-gray-700">
+        <h2 className="mb-3 text-sm font-medium text-zinc-400">
           Sources ({data.citations.length})
         </h2>
         <div className="space-y-3">

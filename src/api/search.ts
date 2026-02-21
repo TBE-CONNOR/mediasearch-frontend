@@ -15,6 +15,8 @@ export interface Citation {
   retrieval_score: number;
   rerank_score: number;
   source_uri: string;
+  file_id?: string;
+  presigned_url?: string;
 }
 
 export interface SearchMetadata {
@@ -71,7 +73,7 @@ interface SearchRequest {
 async function fetchCitationFiles(
   citations: Citation[],
 ): Promise<FileItem[]> {
-  const uniqueIds = [...new Set(citations.map((c) => stripExt(c.source_file)))];
+  const uniqueIds = [...new Set(citations.map((c) => c.file_id ?? stripExt(c.source_file)))];
   const results = await Promise.allSettled(uniqueIds.map((id) => getFile(id)));
   return results
     .filter((r): r is PromiseFulfilledResult<FileItem> => r.status === 'fulfilled')
@@ -100,7 +102,7 @@ export async function searchFiles(
 
     const enrichedCitations: EnrichedCitation[] = result.citations.map((c) => ({
       ...c,
-      file: files.find((f) => f.file_id === stripExt(c.source_file)) ?? null,
+      file: files.find((f) => f.file_id === (c.file_id ?? stripExt(c.source_file))) ?? null,
     }));
 
     return { ...result, citations: enrichedCitations };
@@ -113,7 +115,7 @@ export async function searchFiles(
 
   const enrichedCitations: EnrichedCitation[] = result.citations.map((c) => ({
     ...c,
-    file: files.find((f) => f.file_id === stripExt(c.source_file)) ?? null,
+    file: files.find((f) => f.file_id === (c.file_id ?? stripExt(c.source_file))) ?? null,
   }));
 
   return { ...result, citations: enrichedCitations };

@@ -71,7 +71,7 @@ export function FileDetailPage() {
     return (
       <div className="p-6">
         <div className="mx-auto max-w-2xl">
-          <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+          <div role="alert" className="rounded-lg border border-red-800 bg-red-900/30 p-4 text-sm text-red-400">
             <p>
               {is404
                 ? 'File not found. It may have been deleted.'
@@ -83,7 +83,7 @@ export function FileDetailPage() {
               <button
                 type="button"
                 onClick={() => void refetch()}
-                className="mt-2 inline-flex items-center gap-1 font-medium text-red-700 hover:text-red-800"
+                className="mt-2 inline-flex items-center gap-1 font-medium text-red-400 hover:text-red-300"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Retry
@@ -92,7 +92,7 @@ export function FileDetailPage() {
           </div>
           <Link
             to="/files"
-            className="mt-4 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+            className="mt-4 inline-flex items-center gap-1 text-sm text-blue-400 hover:underline"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Files
           </Link>
@@ -106,16 +106,16 @@ export function FileDetailPage() {
       <div className="mx-auto max-w-2xl">
         <Link
           to="/files"
-          className="mb-4 inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+          className="mb-4 inline-flex items-center gap-1 text-sm text-blue-400 hover:underline"
         >
           <ArrowLeft className="h-4 w-4" /> Back to Files
         </Link>
 
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
           {/* Header */}
           <div className="mb-6 flex items-start justify-between">
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-xl font-bold text-gray-900">
+              <h1 className="truncate text-xl font-bold text-white">
                 {file.file_name}
               </h1>
               <StatusLine status={file.processing_status} />
@@ -161,7 +161,7 @@ export function FileDetailPage() {
                 type="button"
                 onClick={() => downloadMut.mutate()}
                 disabled={downloadMut.isPending}
-                className="inline-flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
               >
                 {downloadMut.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -177,7 +177,7 @@ export function FileDetailPage() {
               <button
                 type="button"
                 onClick={() => setConfirmDelete(true)}
-                className="inline-flex items-center gap-2 rounded border border-red-300 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                className="inline-flex items-center gap-2 rounded-lg border border-red-800 px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -188,14 +188,14 @@ export function FileDetailPage() {
                   type="button"
                   onClick={() => deleteMut.mutate()}
                   disabled={deleteMut.isPending}
-                  className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 disabled:opacity-50"
                 >
                   {deleteMut.isPending ? 'Deleting...' : 'Confirm Delete'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
                 >
                   Cancel
                 </button>
@@ -204,12 +204,12 @@ export function FileDetailPage() {
           </div>
 
           {downloadMut.isError && (
-            <p className="mt-3 text-sm text-red-600">
+            <p className="mt-3 text-sm text-red-400">
               Failed to get download link. Please try again.
             </p>
           )}
           {deleteMut.isError && (
-            <p className="mt-3 text-sm text-red-600">
+            <p className="mt-3 text-sm text-red-400">
               Failed to delete file. Please try again.
             </p>
           )}
@@ -232,14 +232,14 @@ function Row({
 }) {
   return (
     <div>
-      <dt className="font-medium text-gray-500">{label}</dt>
+      <dt className="font-medium text-zinc-500">{label}</dt>
       <dd
         className={`mt-0.5 break-all ${
           error
-            ? 'text-red-600'
+            ? 'text-red-400'
             : mono
-              ? 'font-mono text-xs text-gray-900'
-              : 'text-gray-900'
+              ? 'font-mono text-xs text-zinc-300'
+              : 'text-white'
         }`}
       >
         {value}

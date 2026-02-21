@@ -58,7 +58,7 @@ export function FileFilter({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
-        className="inline-flex items-center gap-1.5 rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
       >
         <Filter className="h-3.5 w-3.5" />
         {selected.length === 0
@@ -71,7 +71,7 @@ export function FileFilter({
         <button
           type="button"
           onClick={() => onChange([])}
-          className="text-xs text-gray-500 hover:text-gray-700"
+          className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
         >
           Clear
         </button>
@@ -83,20 +83,20 @@ export function FileFilter({
           id={listId}
           role="group"
           aria-label="Filter by file"
-          className="absolute left-0 top-full z-10 mt-1 max-h-52 w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+          className="absolute left-0 top-full z-10 mt-1 max-h-52 w-72 overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-900 py-1 shadow-lg"
         >
           {files.map((f) => (
             <label
               key={f.file_id}
-              className="flex cursor-pointer items-center gap-2 px-3 py-1.5 hover:bg-gray-50"
+              className="flex cursor-pointer items-center gap-2 px-3 py-1.5 transition-colors hover:bg-zinc-800"
             >
               <input
                 type="checkbox"
                 checked={selected.includes(f.file_id)}
                 onChange={() => toggle(f.file_id)}
-                className="rounded border-gray-300"
+                className="rounded border-zinc-600 bg-zinc-800"
               />
-              <span className="truncate text-sm text-gray-700">
+              <span className="truncate text-sm text-zinc-300">
                 {f.file_name}
               </span>
             </label>

@@ -37,6 +37,7 @@ export interface FileItem {
   extracted_content_length?: number;
   error_message?: string;
   rejection_reason?: string;
+  presigned_url?: string;
 }
 
 interface FilesPageResponse {

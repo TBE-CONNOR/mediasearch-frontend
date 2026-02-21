@@ -26,8 +26,8 @@ export function PricingPage() {
     <div className="p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Choose Your Plan</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-white">Choose Your Plan</h1>
+          <p className="mt-2 text-zinc-400">
             Start free, upgrade when you need more.
           </p>
         </div>
@@ -51,13 +51,13 @@ export function PricingPage() {
             <CardBrandLogo brand="amex" />
             <CardBrandLogo brand="discover" />
           </div>
-          <p className="flex items-center gap-1.5 text-xs text-gray-400">
+          <p className="flex items-center gap-1.5 text-xs text-zinc-500">
             <Lock className="h-3 w-3" />
             Payments processed securely by Stripe. Charges appear as
             &quot;MEDIASEARCH&quot; on your statement. We never store your card
             data.
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-zinc-500">
             Prices shown in USD. Applicable taxes may be added at checkout.
           </p>
         </div>
@@ -78,7 +78,7 @@ function BillingToggle({
   return (
     <div className="flex items-center justify-center gap-3">
       <span
-        className={`text-sm font-medium ${!annual ? 'text-gray-900' : 'text-gray-500'}`}
+        className={`text-sm font-medium ${!annual ? 'text-white' : 'text-zinc-500'}`}
       >
         Monthly
       </span>
@@ -88,8 +88,8 @@ function BillingToggle({
         aria-checked={annual}
         aria-label="Toggle annual billing"
         onClick={() => onToggle(!annual)}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:outline-none ${
-          annual ? 'bg-blue-600' : 'bg-gray-200'
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] focus-visible:outline-none ${
+          annual ? 'bg-blue-600' : 'bg-zinc-700'
         }`}
       >
         <span
@@ -99,12 +99,12 @@ function BillingToggle({
         />
       </button>
       <span
-        className={`text-sm font-medium ${annual ? 'text-gray-900' : 'text-gray-500'}`}
+        className={`text-sm font-medium ${annual ? 'text-white' : 'text-zinc-500'}`}
       >
         Annual
       </span>
       {annual && savingsPercent > 0 && (
-        <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+        <span className="rounded-full bg-green-900/30 px-2 py-0.5 text-xs font-medium text-green-400">
           Save up to {savingsPercent}%
         </span>
       )}
@@ -125,24 +125,24 @@ function TierCard({
   const isFree = t.monthlyPrice === null;
 
   const cardClasses = t.recommended
-    ? 'relative rounded-lg border-2 border-blue-500 bg-white p-6 shadow-lg ring-1 ring-blue-500/20 lg:scale-105'
+    ? 'relative rounded-xl border-2 border-blue-500 bg-zinc-900/50 p-6 ring-1 ring-blue-500/20 lg:scale-105'
     : t.decoy
-      ? 'relative rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm'
+      ? 'relative rounded-xl border border-zinc-700 bg-zinc-800/50 p-6'
       : t.id === 'power'
-        ? 'relative rounded-lg border border-amber-200 bg-white p-6 shadow-sm'
-        : 'relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm';
+        ? 'relative rounded-xl border border-amber-800 bg-zinc-900/50 p-6'
+        : 'relative rounded-xl border border-zinc-800 bg-zinc-900/50 p-6';
 
   const buttonClasses = isCurrentPlan
-    ? 'w-full rounded-md px-4 py-2 text-sm font-medium bg-gray-100 text-gray-500 cursor-default'
+    ? 'w-full rounded-lg px-4 py-2 text-sm font-medium bg-zinc-800 text-zinc-500 cursor-default'
     : t.recommended
-      ? 'w-full rounded-md px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700'
+      ? 'w-full rounded-lg px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors'
       : t.decoy
-        ? 'w-full rounded-md px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200'
+        ? 'w-full rounded-lg px-4 py-2 text-sm font-medium bg-zinc-800 text-zinc-400 hover:bg-zinc-700 transition-colors'
         : t.id === 'power'
-          ? 'w-full rounded-md px-4 py-2 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700'
-          : 'w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50';
+          ? 'w-full rounded-lg px-4 py-2 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors'
+          : 'w-full rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-colors';
 
-  const priceColor = t.decoy ? 'text-gray-600' : 'text-gray-900';
+  const priceColor = t.decoy ? 'text-zinc-400' : 'text-white';
 
   const price = annual ? t.annualMonthly : t.monthlyPrice;
   const billingNote = annual
@@ -157,7 +157,7 @@ function TierCard({
             className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ${
               t.recommended
                 ? 'bg-blue-600 text-white'
-                : 'bg-amber-100 text-amber-700'
+                : 'bg-amber-900/30 text-amber-400'
             }`}
           >
             {t.badge}
@@ -165,23 +165,23 @@ function TierCard({
         </div>
       )}
 
-      <h3 className="text-lg font-semibold text-gray-900">{t.name}</h3>
+      <h3 className="text-lg font-semibold text-white">{t.name}</h3>
 
       <div className="mt-4">
         {isFree ? (
-          <p className="text-3xl font-bold text-gray-900">Free</p>
+          <p className="text-3xl font-bold text-white">Free</p>
         ) : (
           <>
             <p className={`text-3xl font-bold ${priceColor}`}>
               ${price?.toFixed(2)}
-              <span className="text-base font-normal text-gray-500">
+              <span className="text-base font-normal text-zinc-500">
                 /mo
               </span>
-              <span className="ml-1 text-xs font-normal text-gray-400">
+              <span className="ml-1 text-xs font-normal text-zinc-500">
                 USD
               </span>
             </p>
-            <p className="mt-1 text-xs text-gray-500">{billingNote}</p>
+            <p className="mt-1 text-xs text-zinc-500">{billingNote}</p>
           </>
         )}
       </div>
@@ -190,9 +190,9 @@ function TierCard({
         {t.features.map((feature) => (
           <li
             key={feature}
-            className="flex items-start gap-2 text-sm text-gray-700"
+            className="flex items-start gap-2 text-sm text-zinc-300"
           >
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
             {feature}
           </li>
         ))}
@@ -211,7 +211,7 @@ function TierCard({
 }
 
 function CardBrandLogo({ brand }: { brand: 'visa' | 'mastercard' | 'amex' | 'discover' }) {
-  const shared = 'h-6 w-10 rounded border border-gray-200 bg-white p-0.5';
+  const shared = 'h-6 w-10 rounded border border-zinc-700 bg-zinc-900 p-0.5';
 
   switch (brand) {
     case 'visa':
@@ -239,9 +239,9 @@ function CardBrandLogo({ brand }: { brand: 'visa' | 'mastercard' | 'amex' | 'dis
     case 'discover':
       return (
         <svg className={shared} viewBox="0 0 48 32" fill="none" aria-label="Discover">
-          <rect x="1" y="1" width="46" height="30" rx="3" fill="#fff" stroke="#E5E7EB"/>
+          <rect x="1" y="1" width="46" height="30" rx="3" fill="#18181b" stroke="#3f3f46"/>
           <circle cx="28" cy="16" r="7" fill="#F76F20"/>
-          <text x="16" y="18" textAnchor="middle" fill="#1A1F36" fontSize="5.5" fontWeight="bold" fontFamily="sans-serif">D</text>
+          <text x="16" y="18" textAnchor="middle" fill="#a1a1aa" fontSize="5.5" fontWeight="bold" fontFamily="sans-serif">D</text>
         </svg>
       );
   }
@@ -312,12 +312,12 @@ function SubscribeButton({
         )}
       </button>
       {configError && (
-        <p role="alert" className="mt-2 text-xs text-red-600">
+        <p role="alert" className="mt-2 text-xs text-red-400">
           {configError}
         </p>
       )}
       {checkoutMut.isError && (
-        <p role="alert" className="mt-2 text-xs text-red-600">
+        <p role="alert" className="mt-2 text-xs text-red-400">
           {isAxiosError(checkoutMut.error) &&
           checkoutMut.error.response?.status === 404
             ? 'Subscription checkout is temporarily unavailable. Please try again later.'

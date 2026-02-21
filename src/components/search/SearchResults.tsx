@@ -37,7 +37,7 @@ export function SearchResults({
         role="tablist"
         aria-label="Search results view"
         onKeyDown={handleTabKeyDown}
-        className="inline-flex overflow-hidden rounded-lg border border-gray-200"
+        className="inline-flex overflow-hidden rounded-lg border border-zinc-800"
       >
         <button
           ref={galleryTabRef}
@@ -48,10 +48,10 @@ export function SearchResults({
           aria-controls="tabpanel-gallery"
           tabIndex={viewMode === 'gallery' ? 0 : -1}
           onClick={() => onChangeViewMode('gallery')}
-          className={`px-4 py-2 text-sm font-medium ${
+          className={`px-4 py-2 text-sm font-medium transition-colors ${
             viewMode === 'gallery'
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
+              : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
           }`}
         >
           Media Gallery
@@ -65,10 +65,10 @@ export function SearchResults({
           aria-controls="tabpanel-analysis"
           tabIndex={viewMode === 'analysis' ? 0 : -1}
           onClick={() => onChangeViewMode('analysis')}
-          className={`px-4 py-2 text-sm font-medium ${
+          className={`px-4 py-2 text-sm font-medium transition-colors ${
             viewMode === 'analysis'
               ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
+              : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
           }`}
         >
           AI Analysis

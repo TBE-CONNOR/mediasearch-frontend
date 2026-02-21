@@ -64,11 +64,11 @@ export function NavBar() {
   }, [mobileOpen, closeMobileMenu]);
 
   return (
-    <nav aria-label="Main navigation" className="border-b border-gray-200 bg-white">
+    <nav aria-label="Main navigation" className="border-b border-zinc-800 bg-[#09090b]">
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Brand */}
-          <Link to="/" className="text-lg font-bold text-gray-900">
+          <Link to="/" className="text-lg font-bold text-white">
             MediaSearch
           </Link>
 
@@ -79,10 +79,10 @@ export function NavBar() {
                 key={to}
                 to={to}
                 aria-current={isActive(to, location.pathname) ? 'page' : undefined}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive(to, location.pathname)
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-blue-600/10 text-blue-400'
+                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
                 }`}
               >
                 {label}
@@ -98,7 +98,7 @@ export function NavBar() {
             <button
               type="button"
               onClick={signOut}
-              className="hidden items-center gap-1 rounded px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 sm:inline-flex"
+              className="hidden items-center gap-1 rounded px-2 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300 sm:inline-flex"
             >
               <LogOut className="h-4 w-4" />
               Sign Out
@@ -110,7 +110,7 @@ export function NavBar() {
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
-              className="rounded p-1.5 text-gray-500 hover:bg-gray-50 sm:hidden"
+              className="rounded p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white sm:hidden"
             >
               {mobileOpen ? (
                 <X className="h-5 w-5" />
@@ -124,7 +124,7 @@ export function NavBar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div ref={menuRef} role="dialog" aria-label="Mobile navigation menu" className="border-t border-gray-200 sm:hidden">
+        <div ref={menuRef} role="dialog" aria-label="Mobile navigation menu" className="border-t border-zinc-800 bg-[#09090b] sm:hidden">
           <div className="space-y-1 px-4 py-2">
             {NAV_LINKS.map(({ to, label }) => (
               <Link
@@ -132,10 +132,10 @@ export function NavBar() {
                 to={to}
                 onClick={closeMobileMenu}
                 aria-current={isActive(to, location.pathname) ? 'page' : undefined}
-                className={`block rounded-md px-3 py-2 text-sm font-medium ${
+                className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                   isActive(to, location.pathname)
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-blue-600/10 text-blue-400'
+                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
                 }`}
               >
                 {label}
@@ -144,7 +144,7 @@ export function NavBar() {
             <button
               type="button"
               onClick={signOut}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30"
             >
               <LogOut className="h-4 w-4" />
               Sign Out

@@ -94,7 +94,7 @@ export function SearchPage() {
   return (
     <div className="p-6">
       <div className="mx-auto max-w-3xl">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">Search</h1>
+        <h1 className="mb-6 text-2xl font-bold text-white">Search</h1>
 
         {/* Search form */}
         <form onSubmit={handleSubmit} className="flex gap-2">
@@ -107,12 +107,12 @@ export function SearchPage() {
             aria-label="Search your files"
             // eslint-disable-next-line jsx-a11y/no-autofocus -- primary action on a dedicated search page
             autoFocus
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-500 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:outline-none"
+            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
           />
           <button
             type="submit"
             disabled={searchMut.isPending || !query.trim()}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {searchMut.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -136,13 +136,13 @@ export function SearchPage() {
         {(hasProcessingFiles || hasActiveUploads) && (
           <div
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4"
+            className="mt-4 flex items-center gap-3 rounded-lg border border-amber-800 bg-amber-900/30 p-4"
           >
             <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-amber-500" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
             </span>
-            <p className="text-sm text-amber-800">
+            <p className="text-sm text-amber-400">
               Your files are still being indexed &mdash; results may be
               incomplete. This usually takes under a minute.
             </p>
@@ -153,13 +153,13 @@ export function SearchPage() {
         {!hasProcessingFiles && !hasActiveUploads && kbSyncPending && (
           <div
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-lg border border-blue-300 bg-blue-50 p-4"
+            className="mt-4 flex items-center gap-3 rounded-lg border border-blue-800 bg-blue-900/30 p-4"
           >
             <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-blue-500" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-blue-500" />
             </span>
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-blue-400">
               Files processed &mdash; updating search index. New results
               available within 2 minutes.
             </p>
@@ -175,14 +175,14 @@ export function SearchPage() {
 
         {/* Generic error (non-429) */}
         {searchMut.isError && !is429(searchMut.error) && (
-          <div role="alert" className="mt-6 rounded-lg bg-red-50 p-4 text-sm text-red-700">
+          <div role="alert" className="mt-6 rounded-lg border border-red-800 bg-red-900/30 p-4 text-sm text-red-400">
             Search failed. Please try again.
           </div>
         )}
 
         {/* Loading */}
         {searchMut.isPending && (
-          <div role="status" className="mt-8 flex items-center justify-center gap-2 text-gray-500">
+          <div role="status" className="mt-8 flex items-center justify-center gap-2 text-zinc-500">
             <Loader2 className="h-5 w-5 animate-spin" />
             Searching your files...
           </div>
@@ -201,8 +201,8 @@ export function SearchPage() {
 
         {/* Empty state */}
         {!displayResult && !searchMut.isPending && (
-          <div className="mt-12 text-center text-gray-400">
-            <Search className="mx-auto h-10 w-10 text-gray-300" />
+          <div className="mt-12 text-center text-zinc-500">
+            <Search className="mx-auto h-10 w-10 text-zinc-600" />
             <p className="mt-3 text-sm">Search your files with natural language</p>
           </div>
         )}

@@ -40,26 +40,26 @@ export class ErrorBoundary extends Component<Props, State> {
           ref={this.containerRef}
           role="alert"
           tabIndex={-1}
-          className="flex min-h-screen items-center justify-center bg-gray-50 outline-none"
+          className="flex min-h-screen items-center justify-center bg-[#09090b] outline-none"
         >
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-white">
               Something went wrong
             </h1>
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-zinc-400">
               An unexpected error occurred. Please reload and try again.
             </p>
             <div className="mt-4 flex items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
               >
                 Reload Page
               </button>
               <a
                 href="/"
-                className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
               >
                 Go to Home
               </a>

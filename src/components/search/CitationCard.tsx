@@ -11,22 +11,30 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
   const isLong = citation.text_preview.length > CITATION_PREVIEW_LIMIT;
 
   return (
-    <div className="rounded-lg bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          {/* createElement avoids eslint react-hooks false positive on dynamic component */}
-          {createElement(getModalityIcon(citation.content_type), {
-            className: 'h-5 w-5 shrink-0 text-gray-400',
-          })}
+          {(citation.file?.presigned_url || citation.presigned_url) && citation.content_type === 'image' ? (
+            <img
+              src={citation.file?.presigned_url || citation.presigned_url}
+              alt=""
+              className="h-8 w-8 shrink-0 rounded object-cover"
+            />
+          ) : (
+            /* createElement avoids eslint react-hooks false positive on dynamic component */
+            createElement(getModalityIcon(citation.content_type), {
+              className: 'h-5 w-5 shrink-0 text-zinc-500',
+            })
+          )}
           {citation.file ? (
             <Link
               to={`/files/${citation.file.file_id}`}
-              className="truncate text-sm font-medium text-blue-600 hover:underline"
+              className="truncate text-sm font-medium text-blue-400 hover:underline"
             >
               {fileName}
             </Link>
           ) : (
-            <span className="truncate text-sm font-medium text-gray-700">
+            <span className="truncate text-sm font-medium text-zinc-300">
               {fileName}
             </span>
           )}
@@ -40,21 +48,21 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label="Relevance score"
-              className="h-1.5 w-16 rounded-full bg-gray-200"
+              className="h-1.5 w-16 rounded-full bg-zinc-800"
             >
               <div
                 className="h-full rounded-full bg-blue-500"
                 style={{ width: `${Math.round(score * 100)}%` }}
               />
             </div>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-zinc-500">
               {(score * 100).toFixed(0)}%
             </span>
           </div>
         )}
       </div>
 
-      <p className="mt-2 text-sm text-gray-600">
+      <p className="mt-2 text-sm text-zinc-400">
         {isLong && !expanded
           ? citation.text_preview.slice(0, CITATION_PREVIEW_LIMIT) + '...'
           : citation.text_preview}
@@ -63,7 +71,7 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
-          className="mt-1 text-xs text-blue-600 hover:text-blue-800"
+          className="mt-1 text-xs text-blue-400 transition-colors hover:text-blue-300"
         >
           {expanded ? 'Show less' : 'Read more'}
         </button>

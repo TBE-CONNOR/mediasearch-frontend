@@ -17,10 +17,10 @@ import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
 import type { Tier } from '@/types/domain';
 
 const STATUS_CONFIG: Record<string, { style: string; label: string }> = {
-  active: { style: 'text-green-600', label: 'Active' },
-  past_due: { style: 'text-red-600', label: 'Past Due' },
-  canceled: { style: 'text-gray-500', label: 'Canceled' },
-  trialing: { style: 'text-blue-600', label: 'Trial' },
+  active: { style: 'text-green-400', label: 'Active' },
+  past_due: { style: 'text-red-400', label: 'Past Due' },
+  canceled: { style: 'text-zinc-500', label: 'Canceled' },
+  trialing: { style: 'text-blue-400', label: 'Trial' },
 };
 
 export function SubscriptionPage() {
@@ -90,12 +90,12 @@ export function SubscriptionPage() {
           {is429(error) ? (
             <QuotaErrorBanner error={error} />
           ) : (
-            <div role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+            <div role="alert" className="rounded-lg border border-red-800 bg-red-900/30 p-4 text-sm text-red-400">
               <p>Failed to load subscription details.</p>
               <button
                 type="button"
                 onClick={() => void refetch()}
-                className="mt-2 inline-flex items-center gap-1 font-medium text-red-700 hover:text-red-800"
+                className="mt-2 inline-flex items-center gap-1 font-medium text-red-400 hover:text-red-300"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Retry
@@ -113,18 +113,18 @@ export function SubscriptionPage() {
   return (
     <div className="p-6">
       <div className="mx-auto max-w-lg">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">Subscription</h1>
+        <h1 className="mb-6 text-2xl font-bold text-white">Subscription</h1>
 
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
           {/* Plan header */}
           <div className="flex items-center gap-3">
             <TierBadge tier={tier} />
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-white">
                 {TIER_LABELS[tier] ?? tier} Plan
               </h2>
               {sub && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-zinc-400">
                   {formatAmount(sub.amount, sub.currency)}/{sub.interval}
                 </p>
               )}
@@ -136,12 +136,12 @@ export function SubscriptionPage() {
             <SubscriptionDetails sub={sub} />
           ) : (
             <div className="mt-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-zinc-500">
                 No active subscription. You are on the free plan.
               </p>
               <Link
                 to="/pricing"
-                className="mt-3 inline-flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
               >
                 View Plans
               </Link>
@@ -155,7 +155,7 @@ export function SubscriptionPage() {
                 type="button"
                 onClick={() => portalMut.mutate()}
                 disabled={portalMut.isPending}
-                className="inline-flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
               >
                 {portalMut.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -166,7 +166,7 @@ export function SubscriptionPage() {
               </button>
               <Link
                 to="/pricing"
-                className="inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
               >
                 Compare Plans
               </Link>
@@ -174,7 +174,7 @@ export function SubscriptionPage() {
           )}
 
           {portalMut.isError && (
-            <p className="mt-3 text-sm text-red-600">
+            <p className="mt-3 text-sm text-red-400">
               {isAxiosError(portalMut.error) &&
               portalMut.error.response?.status === 404
                 ? 'No subscription found. Subscribe to a plan to manage billing.'
@@ -201,7 +201,7 @@ function TierBadge({ tier }: { tier: Tier }) {
 
 function SubscriptionDetails({ sub }: { sub: SubscriptionInfo }) {
   const statusCfg = STATUS_CONFIG[sub.subscription_status] ?? {
-    style: 'text-gray-600',
+    style: 'text-zinc-400',
     label: sub.subscription_status,
   };
 
@@ -210,14 +210,14 @@ function SubscriptionDetails({ sub }: { sub: SubscriptionInfo }) {
   return (
     <dl className="mt-4 space-y-3 text-sm">
       <div>
-        <dt className="font-medium text-gray-500">Status</dt>
+        <dt className="font-medium text-zinc-500">Status</dt>
         <dd className={`font-medium ${statusCfg.style}`}>{statusCfg.label}</dd>
       </div>
       <div>
-        <dt className="font-medium text-gray-500">
+        <dt className="font-medium text-zinc-500">
           {sub.cancel_at_period_end ? 'Cancels on' : 'Renews on'}
         </dt>
-        <dd className="text-gray-900">{periodDate}</dd>
+        <dd className="text-white">{periodDate}</dd>
       </div>
     </dl>
   );

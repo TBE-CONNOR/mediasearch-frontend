@@ -143,7 +143,7 @@ export function NavBar() {
 
       {/* Mobile overflow menu — full-width dropdown under nav */}
       {mobileOpen && (
-        <div ref={menuRef} role="dialog" aria-label="More navigation options" className="border-t border-zinc-800 bg-[#09090b] sm:hidden">
+        <div ref={menuRef} role="dialog" aria-modal="true" aria-label="More navigation options" className="border-t border-zinc-800 bg-[#09090b] sm:hidden">
           <div className="space-y-1 px-4 py-2">
             {SECONDARY_LINKS.map(({ to, label }) => (
               <Link

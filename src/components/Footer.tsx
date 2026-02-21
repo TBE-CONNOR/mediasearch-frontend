@@ -1,8 +1,5 @@
 import { Link } from 'react-router';
-
-const CONTACT_EMAIL = 'boetigsolutions@gmail.com';
-const CONTACT_PHONE = '(443) 333-0998';
-const CONTACT_PHONE_HREF = 'tel:+14433330998';
+import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_HREF } from '@/config/constants';
 
 const LEGAL_LINKS = [
   { to: '/legal#privacy', label: 'Privacy Policy' },

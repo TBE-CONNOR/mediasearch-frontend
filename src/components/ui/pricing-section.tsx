@@ -196,7 +196,7 @@ function TierCard({
           <Link
             to={ctaHref}
             className={cn(
-              'block w-full rounded-lg px-4 py-2 text-center text-sm font-medium transition-colors',
+              'block w-full rounded-lg px-4 py-2 text-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950',
               isRecommended
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
                 : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700',

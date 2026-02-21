@@ -152,7 +152,7 @@ export function AnimatedTestimonials({
               type="button"
               onClick={handlePrev}
               aria-label="Previous testimonial"
-              className="group/button flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800"
+              className="group/button flex h-11 w-11 items-center justify-center rounded-full bg-zinc-800"
             >
               <ArrowLeft className="h-5 w-5 text-white motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover/button:rotate-12" />
             </button>
@@ -160,7 +160,7 @@ export function AnimatedTestimonials({
               type="button"
               onClick={handleNext}
               aria-label="Next testimonial"
-              className="group/button flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800"
+              className="group/button flex h-11 w-11 items-center justify-center rounded-full bg-zinc-800"
             >
               <ArrowRight className="h-5 w-5 text-white motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover/button:-rotate-12" />
             </button>

@@ -10,9 +10,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-export const CONTACT_EMAIL = 'boetigsolutions@gmail.com';
-export const CONTACT_PHONE = '(443) 333-0998';
-export const CONTACT_PHONE_HREF = 'tel:+14433330998';
+export { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_HREF } from '@/config/constants';
 
 export interface Feature {
   icon: LucideIcon;

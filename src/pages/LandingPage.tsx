@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { TIERS } from '@/config/pricing';
 import { HeroSection } from '@/components/ui/hero-section';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
-import AnimatedBackground from '@/components/ui/animated-background';
+import { AnimatedBackground } from '@/components/ui/animated-background';
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
 import { PricingSection } from '@/components/ui/pricing-section';
 import { StickyNav } from '@/components/landing/StickyNav';

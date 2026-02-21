@@ -24,7 +24,7 @@ interface AnimatedBackgroundProps {
   enableHover?: boolean;
 }
 
-export default function AnimatedBackground({
+export function AnimatedBackground({
   children,
   defaultValue,
   onValueChange,

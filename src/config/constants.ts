@@ -31,6 +31,11 @@ export const MEDIA_DURATION_TIMEOUT_MS = 10_000;
 // ─── Search ───────────────────────────────────────────────
 export const LOW_CONFIDENCE_TOKEN_THRESHOLD = 20;
 
+// ─── Contact ─────────────────────────────────────────────
+export const CONTACT_EMAIL = 'boetigsolutions@gmail.com';
+export const CONTACT_PHONE = '(443) 333-0998';
+export const CONTACT_PHONE_HREF = 'tel:+14433330998';
+
 // ─── Tier display ─────────────────────────────────────────
 export const TIER_LABELS: Record<Tier, string> = {
   free: 'Free',

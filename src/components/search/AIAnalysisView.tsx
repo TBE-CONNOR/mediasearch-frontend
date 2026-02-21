@@ -23,6 +23,7 @@ export function AIAnalysisView({
           type="button"
           onClick={onToggleAnswer}
           aria-expanded={answerOpen}
+          aria-controls="ai-answer-panel"
           className="flex w-full items-center justify-between px-4 py-3 text-left"
         >
           <span className="text-sm font-medium text-zinc-300">AI Answer</span>
@@ -33,7 +34,7 @@ export function AIAnalysisView({
           )}
         </button>
         {answerOpen && (
-          <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
+          <div id="ai-answer-panel" className="border-t border-zinc-800 px-4 pb-4 pt-3">
             <p className="whitespace-pre-wrap text-sm text-zinc-300">
               {data.answer}
             </p>

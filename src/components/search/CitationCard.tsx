@@ -71,6 +71,7 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
+          aria-expanded={expanded}
           className="mt-1 text-xs text-blue-400 transition-colors hover:text-blue-300"
         >
           {expanded ? 'Show less' : 'Read more'}

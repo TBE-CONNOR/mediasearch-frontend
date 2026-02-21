@@ -107,7 +107,7 @@ export function SearchPage() {
             aria-label="Search your files"
             // eslint-disable-next-line jsx-a11y/no-autofocus -- primary action on a dedicated search page
             autoFocus
-            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-sm text-white placeholder-zinc-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-base text-white placeholder-zinc-500 sm:text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
           />
           <button
             type="submit"

@@ -5,11 +5,14 @@ import { useAuthStore } from '@/store/authStore';
 import { useAuth } from '@/auth/useAuth';
 import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
 
-const NAV_LINKS = [
+const PRIMARY_LINKS = [
   { to: '/dashboard', label: 'Dashboard' },
-  { to: '/files', label: 'Files' },
   { to: '/search', label: 'Search' },
   { to: '/upload', label: 'Upload' },
+] as const;
+
+const SECONDARY_LINKS = [
+  { to: '/files', label: 'Files' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/subscription', label: 'Subscription' },
 ] as const;
@@ -72,14 +75,30 @@ export function NavBar() {
             MediaSearch
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden items-center gap-1 sm:flex">
-            {NAV_LINKS.map(({ to, label }) => (
+          {/* Primary nav — always visible */}
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            {PRIMARY_LINKS.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}
                 aria-current={isActive(to, location.pathname) ? 'page' : undefined}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-md px-1.5 py-1 text-xs font-medium transition-colors sm:px-3 sm:py-1.5 sm:text-sm ${
+                  isActive(to, location.pathname)
+                    ? 'bg-blue-600/10 text-blue-400'
+                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+
+            {/* Secondary nav — desktop only */}
+            {SECONDARY_LINKS.map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                aria-current={isActive(to, location.pathname) ? 'page' : undefined}
+                className={`hidden rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:inline-flex ${
                   isActive(to, location.pathname)
                     ? 'bg-blue-600/10 text-blue-400'
                     : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
@@ -91,8 +110,8 @@ export function NavBar() {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
-            <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${TIER_COLORS[tier ?? 'free']}`}>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase sm:px-2.5 sm:text-xs ${TIER_COLORS[tier ?? 'free']}`}>
               {TIER_LABELS[tier ?? 'free']}
             </span>
             <button
@@ -103,7 +122,7 @@ export function NavBar() {
               <LogOut className="h-4 w-4" />
               Sign Out
             </button>
-            {/* Mobile menu button */}
+            {/* Mobile overflow menu button */}
             <button
               ref={toggleRef}
               type="button"
@@ -122,11 +141,11 @@ export function NavBar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile overflow menu — full-width dropdown under nav */}
       {mobileOpen && (
-        <div ref={menuRef} role="dialog" aria-label="Mobile navigation menu" className="border-t border-zinc-800 bg-[#09090b] sm:hidden">
+        <div ref={menuRef} role="dialog" aria-label="More navigation options" className="border-t border-zinc-800 bg-[#09090b] sm:hidden">
           <div className="space-y-1 px-4 py-2">
-            {NAV_LINKS.map(({ to, label }) => (
+            {SECONDARY_LINKS.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}

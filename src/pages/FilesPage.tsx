@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { Loader2, FileText, Upload, RefreshCw } from 'lucide-react';
 import { createElement, useState } from 'react';
+import { useVideoThumbnail } from '@/hooks/useVideoThumbnail';
 import { listFiles } from '@/api/files';
 import type { FileItem, ProcessingStatus } from '@/api/files';
 import { QuotaErrorBanner } from '@/components/QuotaError';
@@ -121,10 +122,13 @@ function FileCard({ file }: { file: FileItem }) {
 function FileThumbnail({ file }: { file: FileItem }) {
   const [imgError, setImgError] = useState(false);
   const isImage = file.content_type.startsWith('image/');
-  const showThumb =
-    isImage && !!file.presigned_url && file.processing_status === 'completed' && !imgError;
+  const isVideo = file.content_type.startsWith('video/');
+  const isCompleted = file.processing_status === 'completed';
+  const videoUrl = isVideo && isCompleted ? file.presigned_url : undefined;
+  const { thumbnail: videoThumb } = useVideoThumbnail(videoUrl);
 
-  if (showThumb) {
+  // Image thumbnail
+  if (isImage && !!file.presigned_url && isCompleted && !imgError) {
     return (
       <div className="aspect-video bg-zinc-800">
         <img
@@ -137,6 +141,20 @@ function FileThumbnail({ file }: { file: FileItem }) {
     );
   }
 
+  // Video thumbnail via canvas extraction
+  if (isVideo && videoThumb) {
+    return (
+      <div className="aspect-video bg-zinc-800">
+        <img
+          src={videoThumb}
+          alt=""
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  // Fallback icon
   return (
     <div className="flex aspect-video items-center justify-center bg-zinc-800/50">
       {/* createElement avoids eslint react-hooks false positive on dynamic component */}

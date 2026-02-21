@@ -35,18 +35,9 @@ export function LandingPage() {
       {/* ── Hero ── */}
       <section className="pt-16">
         <HeroSection
-          badge={
-            <span className="mx-auto inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/50 px-4 py-1.5 text-sm text-zinc-300">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
-              </span>
-              Powered by AWS Bedrock
-            </span>
-          }
           title="Search your media with AI"
           subtitle={{
-            regular: 'Upload videos, images, audio, and documents. ',
+            regular: 'Upload videos, images, audio, and documents.',
             gradient: 'Upload anything, find everything.',
           }}
           description="Ask anything. Get answers from your own content."
@@ -73,7 +64,7 @@ export function LandingPage() {
                 transition={{ duration: reducedMotion ? 0 : 0.6 }}
               >
                 Search your camera roll{'\u00A0'}
-                <span className="text-4xl font-bold leading-none text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 md:text-[4.5rem]">
+                <span className="text-3xl font-bold leading-none text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 md:text-[3.5rem]" style={{ fontFamily: "'Dancing Script', cursive" }}>
                   with ease
                 </span>
               </motion.h2>

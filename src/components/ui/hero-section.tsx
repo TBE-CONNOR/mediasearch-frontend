@@ -179,6 +179,7 @@ export function HeroSection({
             transition={{ duration: reducedMotion ? 0 : 0.7, delay: reducedMotion ? 0 : 0.3 }}
           >
             {subtitle.regular}
+            <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
               {subtitle.gradient}
             </span>

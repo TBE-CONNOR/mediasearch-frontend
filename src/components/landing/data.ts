@@ -38,8 +38,8 @@ export const FEATURES: Feature[] = [
   },
   {
     icon: Zap,
-    title: 'Instant Processing',
-    description: 'Files analyzed in seconds',
+    title: 'Async by Design',
+    description: 'Processing runs in the background so you never have to sit and wait',
   },
   {
     icon: Shield,

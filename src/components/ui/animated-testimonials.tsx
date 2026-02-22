@@ -14,6 +14,7 @@ interface Testimonial {
   name: string;
   designation: string;
   src: string;
+  objectPosition?: string;
 }
 
 export function AnimatedTestimonials({
@@ -103,7 +104,8 @@ export function AnimatedTestimonials({
                     width={500}
                     height={500}
                     draggable={false}
-                    className="h-full w-full rounded-3xl object-cover object-center"
+                    className="h-full w-full rounded-3xl object-cover"
+                    style={{ objectPosition: testimonial.objectPosition ?? 'center' }}
                   />
                 </motion.div>
               ))}

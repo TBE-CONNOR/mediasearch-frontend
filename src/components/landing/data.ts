@@ -89,42 +89,46 @@ export interface Testimonial {
   name: string;
   designation: string;
   src: string;
+  /** CSS object-position override for non-square photos */
+  objectPosition?: string;
 }
 
 export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      'Finally found a tool that lets me search my entire podcast archive by topic. Game changer.',
-    name: 'Jordan K.',
-    designation: 'Content Creator',
-    src: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500',
+      'Kept downloading videos from TikTok and could never find them for the groupchat when I needed to! I save way too many things to search for something I saved a month ago lol.',
+    name: 'Brandon Ginn',
+    designation: 'Computer Scientist',
+    src: '/testimonials/Brandon_Ginn.jpg',
+    objectPosition: 'center 85%',
   },
   {
     quote:
-      'We upload all our client call recordings and search them by decision point. Saves hours every week.',
-    name: 'Priya M.',
-    designation: 'Startup Founder',
-    src: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500',
+      "I've tried to make similar solutions for finding specific pictures in my camera roll, but nothing compares to this site. Great work.",
+    name: 'Carter Perez',
+    designation: 'Cybersecurity Student @ UMGC',
+    src: '/testimonials/Carter_Perez.jpg',
   },
   {
     quote:
-      "The semantic search is incredible — finds things I couldn't even describe exactly.",
-    name: 'David R.',
-    designation: 'Research Analyst',
-    src: 'https://images.unsplash.com/photo-1623582854588-d60de57fa33f?w=500',
+      "I can't get over how I can literally just search what I remember of a video from long ago and I can find it on demand. I had many different pictures of myself and was amazed to see how I could find each with simple searches such as 'outside on the stairs'.",
+    name: 'Ethan Shorts',
+    designation: 'Marketing Specialist',
+    src: '/testimonials/Ethan_Shorts.jpg',
   },
   {
     quote:
-      'Searched 3 years of lecture recordings in seconds. My students love it.',
-    name: 'Amara L.',
-    designation: 'University Professor',
-    src: 'https://images.unsplash.com/photo-1636041293178-808a6762ab39?w=500',
+      'I love this because I can find my reaction images quickly that I respond to people with in my texts!',
+    name: 'Izzy Lee',
+    designation: 'Phlebotomist',
+    src: '/testimonials/Izzy_Lee.jpg',
+    objectPosition: 'center 15%',
   },
   {
     quote:
-      "Finally an AI tool that actually understands what I'm looking for in my video library.",
-    name: 'Marcus T.',
-    designation: 'Video Producer',
-    src: 'https://images.unsplash.com/photo-1624561172888-ac93c696e10c?w=500',
+      'I have 100+ videos of my favorite influencers talking scattered throughout my camera roll. I always only remember one phrase, and I love how that is all it takes to find a specific video.',
+    name: 'Ryan Billings',
+    designation: 'College Dropout, Founder of cyberexamprep.com',
+    src: '/testimonials/Ryan_Billings.jpeg',
   },
 ];

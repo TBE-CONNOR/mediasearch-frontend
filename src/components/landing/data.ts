@@ -111,7 +111,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     quote:
-      "I can't get over how I can literally just search what I remember of a video from long ago and I can find it on demand. I had many different pictures of myself and was amazed to see how I could find each with simple searches such as 'outside on the stairs'.",
+      "I can't get over how I can literally just search what I remember of a video from long ago and I can find it on demand.",
     name: 'Ethan Shorts',
     designation: 'Marketing Specialist',
     src: '/testimonials/Ethan_Shorts.jpg',

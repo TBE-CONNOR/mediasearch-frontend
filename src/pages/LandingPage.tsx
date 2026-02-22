@@ -45,7 +45,7 @@ export function LandingPage() {
             regular: 'Upload videos, images, audio, and documents.',
             gradient: 'Upload anything, find everything.',
           }}
-          description="Ask anything. Get answers from your own content."
+          description="Describe it. We'll find it."
           primaryCta={{ label: 'Start for free →', href: '/sign-up' }}
           secondaryCta={{ label: 'View pricing', href: '#pricing' }}
         />
@@ -93,57 +93,51 @@ export function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ── Features Grid ── */}
+      {/* ── Features Bento ── */}
       <section id="features" className="px-4 pb-14 pt-20 md:py-20">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-5xl">
           <motion.h2
             className="text-center text-3xl font-bold text-white"
             initial={reducedMotion ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true }}
             transition={{ duration: reducedMotion ? 0 : 0.5 }}
           >
-            Everything you need to search your world
+            Stop scrolling. Start searching.
           </motion.h2>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f, index) => {
-              const col = index % 3;
-              const initial =
-                col === 0
-                  ? { opacity: 0, x: -80 }
-                  : col === 2
-                    ? { opacity: 0, x: 80 }
-                    : { opacity: 0, y: 30 };
-              const visible =
-                col === 0
-                  ? { opacity: 1, x: 0 }
-                  : col === 2
-                    ? { opacity: 1, x: 0 }
-                    : { opacity: 1, y: 0 };
-              const row = index < 3 ? 0 : 1;
-              const delay = row * 0.15 + col * 0.08;
+          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {FEATURES.map((f, index) => (
+              <motion.div
+                key={f.title}
+                className={`group relative overflow-hidden rounded-2xl border border-zinc-800 p-6 ${
+                  f.colSpan === 2 ? 'sm:col-span-2' : ''
+                }`}
+                initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{
+                  duration: reducedMotion ? 0 : 0.5,
+                  delay: reducedMotion ? 0 : index * 0.1,
+                  ease: 'easeOut',
+                }}
+              >
+                {/* Gradient background — different per card */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${f.accent} opacity-60 transition-opacity duration-300 group-hover:opacity-100`}
+                />
+                <div className="absolute inset-0 bg-zinc-950/40" />
 
-              return (
-                <motion.div
-                  key={f.title}
-                  className="flex flex-col items-start gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-6"
-                  initial={reducedMotion ? false : initial}
-                  whileInView={visible}
-                  viewport={{ once: false, amount: 0.3 }}
-                  transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : delay, ease: 'easeOut' }}
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600/10">
-                    <f.icon className="h-6 w-6 text-blue-400" />
-                  </div>
+                <div className="relative z-10 flex flex-col gap-3">
+                  <f.icon className="h-7 w-7 text-zinc-300" />
                   <h3 className="text-lg font-semibold text-white">
                     {f.title}
                   </h3>
                   <p className="text-sm leading-relaxed text-zinc-400">
                     {f.description}
                   </p>
-                </motion.div>
-              );
-            })}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -158,7 +152,7 @@ export function LandingPage() {
             viewport={{ once: false }}
             transition={{ duration: reducedMotion ? 0 : 0.5 }}
           >
-            Up and running in minutes
+            How it works
           </motion.h2>
           <motion.div
             className="mt-12"

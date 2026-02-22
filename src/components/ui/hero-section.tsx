@@ -130,8 +130,8 @@ export function HeroSection({
         ))}
 
       {/* Content */}
-      <section className="relative z-10 mx-auto max-w-screen-xl px-4 pt-36 pb-12 md:pt-28 md:px-8">
-        <div className="mx-auto max-w-3xl space-y-5 text-center leading-0 lg:leading-5">
+      <section className="relative z-10 mx-auto max-w-screen-xl px-4 pt-28 pb-16 md:pt-28 md:pb-20 md:px-8">
+        <div className="mx-auto max-w-5xl space-y-5 text-center leading-0 lg:leading-5">
           {/* Badge */}
           {badge && (
             <motion.div
@@ -167,7 +167,7 @@ export function HeroSection({
 
           {/* Subtitle with gradient span */}
           <motion.h2
-            className="mx-auto text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,255,255,0.00)_202.08%)] md:text-4xl lg:text-6xl"
+            className="mx-auto text-2xl font-bold tracking-tighter text-transparent bg-clip-text bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,255,255,0.00)_202.08%)] md:text-3xl lg:text-5xl"
             initial={reducedMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.7, delay: reducedMotion ? 0 : 0.3 }}

@@ -1,12 +1,8 @@
 import {
   Search,
-  Sparkles,
-  Brain,
-  Zap,
-  Shield,
-  BarChart,
   Upload,
-  Cpu,
+  Brain,
+  Clock,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -16,38 +12,44 @@ export interface Feature {
   icon: LucideIcon;
   title: string;
   description: string;
+  /** Tailwind grid column span (1 or 2) */
+  colSpan: 1 | 2;
+  /** Visual accent color class */
+  accent: string;
 }
 
 export const FEATURES: Feature[] = [
   {
     icon: Search,
-    title: 'Multimodal Search',
-    description: 'Video, audio, images, docs',
+    title: 'Search your way',
+    description:
+      'Stop scrolling through thousands of photos. Just describe what you\'re looking for — "that sunset photo from last summer" or "the video where he falls off the chair" — and we\'ll find it.',
+    colSpan: 2,
+    accent: 'from-blue-500/20 to-cyan-500/10',
   },
   {
-    icon: Sparkles,
-    title: 'AI-Powered Answers',
-    description: 'Synthesized answers with citations',
+    icon: Upload,
+    title: 'Upload anything',
+    description:
+      'Photos, videos, voice memos, screen recordings, documents — just drag and drop. We handle the rest.',
+    colSpan: 1,
+    accent: 'from-violet-500/20 to-fuchsia-500/10',
   },
   {
     icon: Brain,
-    title: 'Semantic Understanding',
-    description: 'Finds meaning, not just keywords',
+    title: 'AI gets context',
+    description:
+      'Finds what you mean, not just what you type. Search by vibes, not keywords.',
+    colSpan: 1,
+    accent: 'from-amber-500/20 to-orange-500/10',
   },
   {
-    icon: Zap,
-    title: 'Async by Design',
-    description: 'Processing runs in the background so you never have to sit and wait',
-  },
-  {
-    icon: Shield,
-    title: 'Secure & Private',
-    description: 'JWT auth, per-user isolation',
-  },
-  {
-    icon: BarChart,
-    title: 'Usage Quotas',
-    description: 'Free tier to enterprise scale',
+    icon: Clock,
+    title: 'Instant answers',
+    description:
+      'Ask a question about your content and get the exact moment — with timestamps and confidence scores.',
+    colSpan: 2,
+    accent: 'from-emerald-500/20 to-teal-500/10',
   },
 ];
 
@@ -62,19 +64,22 @@ export const HOW_IT_WORKS: HowItWorksStep[] = [
   {
     icon: Upload,
     title: 'Upload',
-    description: 'Drag and drop any file type. We handle the rest.',
+    description:
+      'Drop your photos, videos, screen recordings — whatever you\'ve got.',
     step: 1,
   },
   {
-    icon: Cpu,
-    title: 'Process',
-    description: 'AWS Bedrock analyzes every second of your content.',
+    icon: Brain,
+    title: 'Understand',
+    description:
+      'We watch, listen to, and read everything so you don\'t have to.',
     step: 2,
   },
   {
     icon: Search,
     title: 'Search',
-    description: 'Ask anything. Get exact answers with source citations.',
+    description:
+      'Describe what you\'re looking for. We\'ll find the exact moment.',
     step: 3,
   },
 ];

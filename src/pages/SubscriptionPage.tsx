@@ -55,8 +55,10 @@ export function SubscriptionPage() {
     // Clean up the query param so a page refresh won't re-trigger
     window.history.replaceState({}, '', location.pathname);
     const refreshToken = useAuthStore.getState().refreshToken;
-    if (refreshToken) {
-      void cognitoClient
+
+    const doRefresh = () => {
+      if (!refreshToken) return Promise.resolve();
+      return cognitoClient
         .refresh(refreshToken)
         .then((result) => {
           useAuthStore.getState().setTokens({
@@ -71,14 +73,21 @@ export function SubscriptionPage() {
         })
         .catch(() => {
           // Token refresh failed — subscription query will still work with current token
-        })
-        .then(() => {
-          // Invalidate after refresh so the query fires with the updated token/tier
-          void queryClient.invalidateQueries({ queryKey: ['subscription'] });
         });
-    } else {
+    };
+
+    void doRefresh().then(() => {
       void queryClient.invalidateQueries({ queryKey: ['subscription'] });
-    }
+    });
+
+    // Delayed second refresh: webhook may not have updated Cognito group yet.
+    // Retry after 4s to pick up the correct tier in the JWT.
+    const timer = setTimeout(() => {
+      void doRefresh().then(() => {
+        void queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      });
+    }, 4000);
+    return () => clearTimeout(timer);
   }, [location.search, location.pathname, queryClient]);
 
   const {
@@ -90,6 +99,17 @@ export function SubscriptionPage() {
     queryKey: ['subscription'],
     queryFn: getSubscription,
   });
+
+  // Sync subscription tier to authStore so NavBar and Dashboard stay current.
+  // Handles the race condition where JWT refresh completes before the webhook
+  // updates the Cognito group.
+  useEffect(() => {
+    if (!data?.tier) return;
+    const storeTier = useAuthStore.getState().tier;
+    if (data.tier !== storeTier) {
+      useAuthStore.getState().setTier(data.tier);
+    }
+  }, [data?.tier]);
 
   const portalMut = useMutation({
     mutationFn: () => getCustomerPortalUrl(),

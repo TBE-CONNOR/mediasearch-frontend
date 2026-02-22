@@ -6,6 +6,7 @@ import { Check, Loader2, Lock } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { createCheckoutSession } from '@/api/checkout';
+import { getCustomerPortalUrl } from '@/api/subscription';
 import { TIERS } from '@/config/pricing';
 import type { PricingTier } from '@/config/pricing';
 import type { Tier } from '@/types/domain';
@@ -250,6 +251,7 @@ function TierCard({
           tier={t}
           annual={annual}
           isCurrentPlan={isCurrentPlan}
+          hasSubscription={currentTier != null && currentTier !== 'free'}
           className={buttonClasses}
         />
       </div>
@@ -298,19 +300,28 @@ function SubscribeButton({
   tier: t,
   annual,
   isCurrentPlan,
+  hasSubscription,
   className,
 }: {
   tier: PricingTier;
   annual: boolean;
   isCurrentPlan: boolean;
+  hasSubscription: boolean;
   className: string;
 }) {
   const cognitoSub = useAuthStore((s) => s.sub);
   const isFree = t.monthlyPrice === null;
   const priceId = annual ? t.annualPriceId : t.monthlyPriceId;
-  const label = isCurrentPlan ? 'Current Plan' : t.cta;
+  const label = isCurrentPlan ? 'Current Plan' : hasSubscription ? 'Manage Billing' : t.cta;
 
   const [configError, setConfigError] = useState('');
+
+  const portalMut = useMutation({
+    mutationFn: () => getCustomerPortalUrl(),
+    onSuccess: ({ portal_url }) => {
+      window.location.href = portal_url;
+    },
+  });
 
   const checkoutMut = useMutation({
     mutationFn: () =>
@@ -330,6 +341,31 @@ function SubscribeButton({
       <button type="button" disabled className={className}>
         {label}
       </button>
+    );
+  }
+
+  // User already has a paid subscription — route to Customer Portal for upgrades/downgrades
+  if (hasSubscription) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => portalMut.mutate()}
+          disabled={portalMut.isPending}
+          className={className}
+        >
+          {portalMut.isPending ? (
+            <Loader2 className="mx-auto h-4 w-4 motion-safe:animate-spin" />
+          ) : (
+            label
+          )}
+        </button>
+        {portalMut.isError && (
+          <p role="alert" className="mt-2 text-xs text-red-400">
+            Failed to open billing portal. Please try again.
+          </p>
+        )}
+      </>
     );
   }
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
@@ -93,19 +93,41 @@ export function DashboardPage() {
     queryFn: () => listFiles(),
   });
 
-  const currentTier = tier ?? 'free';
+  // Sync subscription tier to authStore so NavBar badge and library limits
+  // reflect the real tier even if the JWT hasn't caught up yet.
+  useEffect(() => {
+    if (!subData?.tier) return;
+    const storeTier = useAuthStore.getState().tier;
+    if (subData.tier !== storeTier) {
+      useAuthStore.getState().setTier(subData.tier);
+    }
+  }, [subData?.tier]);
+
+  const currentTier = subData?.tier ?? tier ?? 'free';
   const sub = subData?.subscription;
 
   const fileCounts = useMemo(() => {
     if (!files) return null;
+    const tierLimits = TIER_LIMITS[currentTier];
+
+    // Filter files to match the backend's actual quota counter.
+    // Free tier uses quota#lifetime (count all files).
+    // Paid tiers use quota#YYYY-MM (count only files charged to this month's quota).
+    let relevantFiles = files;
+    if (tierLimits.period === 'month') {
+      const now = new Date();
+      const currentQuotaKey = `quota#${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      relevantFiles = files.filter((f) => f.quota_key === currentQuotaKey);
+    }
+
     const counts: Record<string, number> = {};
     for (const card of STAT_CARDS) {
-      counts[card.prefix] = files.filter((f) =>
+      counts[card.prefix] = relevantFiles.filter((f) =>
         f.content_type.startsWith(card.prefix),
       ).length;
     }
     return counts;
-  }, [files]);
+  }, [files, currentTier]);
 
   const recentFiles = useMemo(() => {
     if (!files || files.length === 0) return [];

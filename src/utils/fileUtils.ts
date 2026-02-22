@@ -14,6 +14,24 @@ import {
   MEDIA_DURATION_TIMEOUT_MS,
 } from '@/config/constants';
 
+/**
+ * Replace non-ISO-8859-1 characters in a filename with ASCII equivalents.
+ * S3 presigned URLs include the filename in Content-Disposition, and
+ * XMLHttpRequest.setRequestHeader rejects values outside Latin-1.
+ */
+export function sanitizeFileName(name: string): string {
+  // Common smart-punctuation replacements
+  return name
+    .replace(/[\u2018\u2019\u201A]/g, "'")
+    .replace(/[\u201C\u201D\u201E]/g, '"')
+    .replace(/\u2026/g, '...')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u00A0/g, ' ')
+    // Strip anything remaining outside printable ASCII
+    // eslint-disable-next-line no-control-regex
+    .replace(/[^\x20-\x7E.]/g, '_');
+}
+
 export function isHeic(file: File): boolean {
   if (file.type === 'image/heic' || file.type === 'image/heif') return true;
   return /\.heic$/i.test(file.name);

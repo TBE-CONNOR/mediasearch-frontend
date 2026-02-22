@@ -38,6 +38,7 @@ export interface FileItem {
   error_message?: string;
   rejection_reason?: string;
   presigned_url?: string;
+  quota_key?: string;
 }
 
 interface FilesPageResponse {

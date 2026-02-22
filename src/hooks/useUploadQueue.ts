@@ -6,6 +6,7 @@ import {
   convertHeicToJpeg,
   getPollingInterval,
   validateFile,
+  sanitizeFileName,
 } from '@/utils/fileUtils';
 import { getPresignedUrl, uploadToS3 } from '@/api/upload';
 import type { UploadResponse } from '@/api/upload';
@@ -143,10 +144,11 @@ async function handleUpload(rawFile: File) {
       }
     }
 
-    // Step 1: Get presigned URL
-    updateUpload(id, { stage: 'uploading', progress: 0 });
+    // Step 1: Get presigned URL (sanitize filename for Content-Disposition header)
+    const safeName = sanitizeFileName(file.name);
+    updateUpload(id, { stage: 'uploading', progress: 0, fileName: safeName });
     try {
-      res = await getPresignedUrl(file.name);
+      res = await getPresignedUrl(safeName);
       updateUpload(id, { fileId: res.file_id });
     } catch (err) {
       if (is429(err)) {

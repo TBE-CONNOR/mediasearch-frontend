@@ -17,6 +17,7 @@ interface AuthState {
     refreshToken?: string;
   }) => void;
   setUser: (user: { email: string; sub: string; tier: Tier }) => void;
+  setTier: (tier: Tier) => void;
   setAuthLoading: (loading: boolean) => void;
   setAuthError: (error: string | null) => void;
   setAuthReady: (ready: boolean) => void;
@@ -44,6 +45,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) =>
     set({ email: user.email, sub: user.sub, tier: user.tier }),
+
+  setTier: (tier) => set({ tier }),
 
   setAuthLoading: (loading) => set({ authLoading: loading }),
   setAuthError: (error) => set({ authError: error }),

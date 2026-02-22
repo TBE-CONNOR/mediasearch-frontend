@@ -71,7 +71,7 @@ interface DeleteResponse {
 /** Max pagination rounds to prevent infinite loops from backend bugs */
 const MAX_PAGES = 50;
 
-export async function listFiles(status?: string): Promise<FileItem[]> {
+export async function listFiles(status?: ProcessingStatus): Promise<FileItem[]> {
   const allFiles: FileItem[] = [];
   let nextToken: string | undefined;
   let pages = 0;

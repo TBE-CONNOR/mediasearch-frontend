@@ -1,5 +1,7 @@
 import type { Tier } from '@/types/domain';
 
+const monthly = (annual: number) => parseFloat((annual / 12).toFixed(2));
+
 export interface PricingTier {
   id: Tier;
   name: string;
@@ -81,7 +83,7 @@ export const TIERS: readonly PricingTier[] = [
     name: 'Pro',
     monthlyPrice: 12.99,
     annualPrice: 119.88,
-    annualMonthly: 9.99,
+    annualMonthly: monthly(119.88),
     monthlyPriceId: priceEnv('VITE_STRIPE_PRICE_PRO_MONTHLY'),
     annualPriceId: priceEnv('VITE_STRIPE_PRICE_PRO_ANNUAL'),
     features: [
@@ -101,7 +103,7 @@ export const TIERS: readonly PricingTier[] = [
     name: 'Plus',
     monthlyPrice: 19.99,
     annualPrice: 184.68,
-    annualMonthly: 15.39,
+    annualMonthly: monthly(184.68),
     monthlyPriceId: priceEnv('VITE_STRIPE_PRICE_PLUS_MONTHLY'),
     annualPriceId: priceEnv('VITE_STRIPE_PRICE_PLUS_ANNUAL'),
     features: [
@@ -121,7 +123,7 @@ export const TIERS: readonly PricingTier[] = [
     name: 'Power',
     monthlyPrice: 34.99,
     annualPrice: 323.88,
-    annualMonthly: 26.99,
+    annualMonthly: monthly(323.88),
     monthlyPriceId: priceEnv('VITE_STRIPE_PRICE_POWER_MONTHLY'),
     annualPriceId: priceEnv('VITE_STRIPE_PRICE_POWER_ANNUAL'),
     features: [

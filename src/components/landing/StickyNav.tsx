@@ -1,21 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
+import { useScrolled } from '@/hooks/useScrolled';
 
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
 export function StickyNav() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const shouldBeScrolled = window.scrollY > 20;
-      setScrolled((prev) => (prev === shouldBeScrolled ? prev : shouldBeScrolled));
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const scrolled = useScrolled();
 
   return (
     <nav

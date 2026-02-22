@@ -15,6 +15,7 @@ export {
   formatPeriodEnd,
   getFileIcon,
   getModalityIcon,
+  isPreviewable,
   formatFileSize,
   formatDuration,
   validateFile,

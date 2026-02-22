@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { createCheckoutSession } from '@/api/checkout';
 import { TIERS } from '@/config/pricing';
 import type { PricingTier } from '@/config/pricing';
+import type { Tier } from '@/types/domain';
 
 export function PricingPage() {
   const [annual, setAnnual] = useState(false);
@@ -315,7 +316,7 @@ function SubscribeButton({
     mutationFn: () =>
       createCheckoutSession({
         price_id: priceId!,
-        tier: t.id,
+        tier: t.id as Exclude<Tier, 'free'>,
         success_url: `${window.location.origin}/subscription?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${window.location.origin}/pricing`,
       }),
@@ -352,7 +353,7 @@ function SubscribeButton({
         className={className}
       >
         {checkoutMut.isPending ? (
-          <Loader2 className="mx-auto h-4 w-4 animate-spin" />
+          <Loader2 className="mx-auto h-4 w-4 motion-safe:animate-spin" />
         ) : (
           label
         )}

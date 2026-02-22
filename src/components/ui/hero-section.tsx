@@ -24,6 +24,7 @@ function useClickRipple(containerRef: React.RefObject<HTMLDivElement | null>) {
     { id: number; x: number; y: number }[]
   >([]);
   const timeoutsRef = useRef<number[]>([]);
+  const idCounter = useRef(0);
 
   const handleClick = useCallback(
     (e: MouseEvent) => {
@@ -31,7 +32,7 @@ function useClickRipple(containerRef: React.RefObject<HTMLDivElement | null>) {
       const rect = containerRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const id = Date.now();
+      const id = idCounter.current++;
       setRipples((prev) => [...prev, { id, x, y }]);
       const tid = window.setTimeout(() => {
         setRipples((prev) => prev.filter((r) => r.id !== id));

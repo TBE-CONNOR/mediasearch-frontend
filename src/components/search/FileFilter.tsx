@@ -71,6 +71,7 @@ export function FileFilter({
         <button
           type="button"
           onClick={() => onChange([])}
+          aria-label="Clear file filter"
           className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
         >
           Clear

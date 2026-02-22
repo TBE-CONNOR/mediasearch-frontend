@@ -23,7 +23,7 @@ export function AIAnalysisView({
           type="button"
           onClick={onToggleAnswer}
           aria-expanded={answerOpen}
-          aria-controls="ai-answer-panel"
+          aria-controls={answerOpen ? 'ai-answer-panel' : undefined}
           className="flex w-full items-center justify-between px-4 py-3 text-left"
         >
           <span className="text-base font-medium text-zinc-300">AI Answer</span>

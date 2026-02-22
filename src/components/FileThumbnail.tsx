@@ -14,7 +14,7 @@ export function FileThumbnail({ file }: { file: FileItem }) {
       <div className="aspect-video bg-zinc-800">
         <img
           src={file.presigned_url}
-          alt=""
+          alt={file.file_name}
           onError={() => setImgError(true)}
           className="h-full w-full object-cover"
         />

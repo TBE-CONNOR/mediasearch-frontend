@@ -176,6 +176,7 @@ function MediaCard({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
             className="relative z-10 mt-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
           >
             {expanded ? 'Show less' : 'Read more'}

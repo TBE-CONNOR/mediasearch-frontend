@@ -122,7 +122,7 @@ function StatusIcon({ stage }: { stage: UploadItem['stage'] }) {
     case 'uploading':
     case 'processing':
       return (
-        <Loader2 className="h-6 w-6 shrink-0 animate-spin text-blue-500" />
+        <Loader2 className="h-6 w-6 shrink-0 motion-safe:animate-spin text-blue-500" />
       );
     case 'completed':
       return <CheckCircle className="h-6 w-6 shrink-0 text-green-400" />;

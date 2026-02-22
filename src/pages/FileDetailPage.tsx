@@ -66,7 +66,7 @@ export function FileDetailPage() {
   if (isPending) {
     return (
       <div className="flex flex-1 items-center justify-center" role="status" aria-label="Loading file details">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
       </div>
     );
   }
@@ -184,7 +184,7 @@ export function FileDetailPage() {
                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50"
               >
                 {downloadMut.isPending ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 motion-safe:animate-spin" />
                 ) : (
                   <Download className="h-5 w-5" />
                 )}
@@ -272,7 +272,7 @@ function StatusLine({ status }: { status: ProcessingStatus }) {
   const info = getStatusInfo(status);
   return (
     <p className={`mt-1 inline-flex items-center gap-1 text-sm font-medium ${info.color}`}>
-      <info.Icon className={`h-4 w-4 ${info.animate ? 'animate-spin' : ''}`} />
+      <info.Icon className={`h-4 w-4 ${info.animate ? 'motion-safe:animate-spin' : ''}`} />
       {info.label}
     </p>
   );

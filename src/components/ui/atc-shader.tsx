@@ -90,14 +90,14 @@ export function ATCShader() {
     const canvas = canvasRef.current;
     if (!canvas || reducedMotion) return;
 
-    const gl = canvas.getContext('webgl', { antialias: true });
+    const gl = canvas.getContext('webgl', { antialias: false });
     if (!gl) return;
 
-    const vs = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fs = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    let vs = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
+    let fs = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
     if (!vs || !fs) return;
 
-    const program = gl.createProgram();
+    let program = gl.createProgram();
     if (!program) return;
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
@@ -108,7 +108,7 @@ export function ATCShader() {
     const vertices = new Float32Array([
       -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
     ]);
-    const buf = gl.createBuffer();
+    let buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
@@ -175,6 +175,12 @@ export function ATCShader() {
       const newResLoc = gl.getUniformLocation(newProgram, 'iResolution');
       const newTimeLoc = gl.getUniformLocation(newProgram, 'iTime');
 
+      // Reassign outer variables so cleanup tracks the latest resources
+      vs = newVs;
+      fs = newFs;
+      program = newProgram;
+      buf = newBuf;
+
       resize();
 
       const renderRestored = () => {
@@ -196,9 +202,11 @@ export function ATCShader() {
       canvas.removeEventListener('webglcontextrestored', handleContextRestored);
       cancelAnimationFrame(animId);
       if (!gl.isContextLost()) {
-        gl.deleteProgram(program);
+        if (vs) gl.detachShader(program, vs!);
+        if (fs) gl.detachShader(program, fs!);
         gl.deleteShader(vs);
         gl.deleteShader(fs);
+        gl.deleteProgram(program);
         gl.deleteBuffer(buf);
       }
     };

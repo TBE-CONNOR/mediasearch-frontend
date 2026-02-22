@@ -45,7 +45,7 @@ export function SearchResults({
           role="tab"
           id="tab-gallery"
           aria-selected={viewMode === 'gallery'}
-          aria-controls="tabpanel-gallery"
+          aria-controls={viewMode === 'gallery' ? 'tabpanel-gallery' : undefined}
           tabIndex={viewMode === 'gallery' ? 0 : -1}
           onClick={() => onChangeViewMode('gallery')}
           className={`px-5 py-2.5 text-base font-medium transition-colors ${
@@ -62,7 +62,7 @@ export function SearchResults({
           role="tab"
           id="tab-analysis"
           aria-selected={viewMode === 'analysis'}
-          aria-controls="tabpanel-analysis"
+          aria-controls={viewMode === 'analysis' ? 'tabpanel-analysis' : undefined}
           tabIndex={viewMode === 'analysis' ? 0 : -1}
           onClick={() => onChangeViewMode('analysis')}
           className={`px-5 py-2.5 text-base font-medium transition-colors ${

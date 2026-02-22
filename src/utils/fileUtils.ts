@@ -15,6 +15,7 @@ import {
 } from '@/config/constants';
 
 export function isHeic(file: File): boolean {
+  if (file.type === 'image/heic' || file.type === 'image/heif') return true;
   return /\.heic$/i.test(file.name);
 }
 

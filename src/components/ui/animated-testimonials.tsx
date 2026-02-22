@@ -56,6 +56,8 @@ export function AnimatedTestimonials({
     [testimonials],
   );
 
+  if (!testimonials.length) return null;
+
   return (
     <div
       className={cn(
@@ -104,6 +106,7 @@ export function AnimatedTestimonials({
                     width={500}
                     height={500}
                     draggable={false}
+                    loading={isActive(index) ? 'eager' : 'lazy'}
                     className="h-full w-full rounded-3xl object-cover"
                     style={{ objectPosition: testimonial.objectPosition ?? 'center' }}
                   />

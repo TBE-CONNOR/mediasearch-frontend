@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, createElement } from 'react';
 import { getFileIcon, getModalityIcon } from '@/utils/fileUtils';
+import { cn } from '@/lib/utils';
 
 interface VideoThumbnailProps {
   url: string;
@@ -35,7 +36,7 @@ export function VideoThumbnail({
       });
     }
     return (
-      <div className={`flex aspect-video items-center justify-center bg-zinc-800/50 ${className ?? ''}`}>
+      <div className={cn('flex aspect-video items-center justify-center bg-zinc-800/50', className)}>
         {createElement(IconComponent, {
           className: 'h-10 w-10 text-zinc-600',
         })}
@@ -60,7 +61,7 @@ export function VideoThumbnail({
   }
 
   return (
-    <div className={`aspect-video bg-zinc-800 ${className ?? ''}`}>
+    <div className={cn('aspect-video bg-zinc-800', className)}>
       <video
         ref={videoRef}
         src={url}

@@ -1,4 +1,4 @@
-import { useId, useRef, useEffect, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
@@ -16,20 +16,16 @@ export function TextHoverEffect({
   const svgRef = useRef<SVGSVGElement>(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
-  const [maskPosition, setMaskPosition] = useState({ cx: '50%', cy: '50%' });
   const prefersReduced = useReducedMotion();
 
-  useEffect(() => {
-    if (svgRef.current && cursor.x !== 0 && cursor.y !== 0) {
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const cxPercentage = ((cursor.x - svgRect.left) / svgRect.width) * 100;
-      const cyPercentage = ((cursor.y - svgRect.top) / svgRect.height) * 100;
-      setMaskPosition({
-        cx: `${cxPercentage}%`,
-        cy: `${cyPercentage}%`,
-      });
-    }
-  }, [cursor]);
+  const svgRect = svgRef.current?.getBoundingClientRect();
+  const maskPosition =
+    cursor.x !== 0 && cursor.y !== 0 && svgRect
+      ? {
+          cx: `${((cursor.x - svgRect.left) / svgRect.width) * 100}%`,
+          cy: `${((cursor.y - svgRect.top) / svgRect.height) * 100}%`,
+        }
+      : { cx: '50%', cy: '50%' };
 
   // Reduced motion: render static outline text only
   if (prefersReduced) {

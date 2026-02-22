@@ -25,7 +25,6 @@ export function QuotaErrorBanner({ error }: { error: unknown }) {
       )}
       <Link
         to="/pricing"
-        aria-label="View pricing plans"
         className="mt-2 inline-flex text-sm font-medium text-amber-400 underline transition-colors hover:text-amber-300"
       >
         View Plans &rarr;

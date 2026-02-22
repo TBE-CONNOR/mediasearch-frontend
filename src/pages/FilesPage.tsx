@@ -47,7 +47,7 @@ export function FilesPage() {
 
         {isPending && (
           <div role="status" aria-label="Loading files" className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
           </div>
         )}
 
@@ -155,7 +155,7 @@ function StatusBadge({ status }: { status: ProcessingStatus }) {
       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${info.bgColor}`}
     >
       <info.Icon
-        className={`h-3 w-3 ${info.animate ? 'animate-spin' : ''}`}
+        className={`h-3 w-3 ${info.animate ? 'motion-safe:animate-spin' : ''}`}
       />
       {info.label}
     </span>

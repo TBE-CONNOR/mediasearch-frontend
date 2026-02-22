@@ -67,7 +67,9 @@ export const useUploadStore = create<UploadState>()(
             : u,
         );
         if (patched.some((u, i) => u !== state.uploads[i])) {
-          useUploadStore.setState({ uploads: patched });
+          useUploadStore.setState({ uploads: patched, kbSyncPending: false });
+        } else if (state.kbSyncPending) {
+          useUploadStore.setState({ kbSyncPending: false });
         }
       },
     },

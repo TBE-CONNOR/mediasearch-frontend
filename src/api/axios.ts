@@ -56,7 +56,7 @@ api.interceptors.request.use(async (config) => {
   if (expiresAt && Date.now() > expiresAt - TOKEN_REFRESH_BUFFER_MS) {
     const fresh = await doRefresh();
     config.headers.Authorization = `Bearer ${fresh.idToken}`;
-  } else {
+  } else if (idToken) {
     config.headers.Authorization = `Bearer ${idToken}`;
   }
 

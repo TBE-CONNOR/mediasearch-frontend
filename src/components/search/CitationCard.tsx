@@ -36,7 +36,7 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
           {citation.file ? (
             <Link
               to={`/files/${citation.file.file_id}`}
-              className="truncate text-base font-medium text-blue-400 hover:underline"
+              className="truncate text-base font-medium text-blue-400 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
             >
               {fileName}
             </Link>

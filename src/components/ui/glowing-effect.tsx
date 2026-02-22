@@ -17,17 +17,17 @@ export function GlowingEffect({
 }: GlowingEffectProps) {
   const reducedMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!containerRef.current) return;
+      if (!glowRef.current || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      setPosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      glowRef.current.style.top = `${y}px`;
+      glowRef.current.style.left = `${x}px`;
     },
     [],
   );
@@ -43,6 +43,7 @@ export function GlowingEffect({
       className="pointer-events-auto absolute inset-0 overflow-hidden rounded-[inherit]"
     >
       <div
+        ref={glowRef}
         className={cn(
           'pointer-events-none absolute rounded-full bg-gradient-to-r from-blue-500 via-cyan-400 to-purple-500 transition-opacity duration-300',
           visible || glow ? 'opacity-100' : 'opacity-0',
@@ -51,10 +52,10 @@ export function GlowingEffect({
         style={{
           width: spread * 2,
           height: spread * 2,
-          top: visible ? position.y - spread : '50%',
-          left: visible ? position.x - spread : '50%',
+          top: '50%',
+          left: '50%',
           filter: `blur(${blur}px)`,
-          transform: visible ? undefined : 'translate(-50%, -50%)',
+          transform: 'translate(-50%, -50%)',
         }}
       />
       {/* Mask inner area to show glow only on borders */}

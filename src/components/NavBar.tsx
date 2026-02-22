@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { LogOut, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useScrolled } from '@/hooks/useScrolled';
 import { useAuthStore } from '@/store/authStore';
 import { useAuth } from '@/auth/useAuth';
 import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
@@ -33,8 +34,8 @@ export function NavBar() {
   const tier = useAuthStore((s) => s.tier);
   const location = useLocation();
   const reducedMotion = useReducedMotion();
+  const scrolled = useScrolled();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
@@ -43,15 +44,13 @@ export function NavBar() {
     toggleRef.current?.focus();
   }, []);
 
-  // Scroll detection for glassmorphism intensity
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    const handleScroll = () => {
-      const shouldBeScrolled = window.scrollY > 20;
-      setScrolled((prev) => (prev === shouldBeScrolled ? prev : shouldBeScrolled));
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [mobileOpen]);
 
   // Focus trap + Escape handler for mobile menu
   useEffect(() => {

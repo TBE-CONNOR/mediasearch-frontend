@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Loader2 } from 'lucide-react';
 import { cognitoClient } from '@/auth/CognitoClient';
 import { useAuthStore } from '@/store/authStore';
@@ -49,12 +49,12 @@ export function AuthCallbackPage() {
           <p className="mt-2 text-xs text-red-500">
             Missing authorization code. Please try signing in again.
           </p>
-          <a
-            href="/sign-in"
+          <Link
+            to="/sign-in"
             className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500"
           >
             Back to Sign In
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -66,12 +66,12 @@ export function AuthCallbackPage() {
         <div role="alert" className="w-full max-w-sm rounded-xl border border-red-800 bg-red-900/30 p-8 text-center">
           <p className="text-sm font-medium text-red-400">Sign-in failed</p>
           <p className="mt-2 text-xs text-red-500">{exchangeError}</p>
-          <a
-            href="/sign-in"
+          <Link
+            to="/sign-in"
             className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500"
           >
             Back to Sign In
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -80,7 +80,7 @@ export function AuthCallbackPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background" role="status" aria-label="Completing sign-in">
       <div className="text-center">
-        <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-500" />
+        <Loader2 className="mx-auto h-8 w-8 motion-safe:animate-spin text-blue-500" />
         <p className="mt-4 text-sm text-zinc-400">Completing sign-in...</p>
       </div>
     </div>

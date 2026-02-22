@@ -130,7 +130,7 @@ export function SearchPage() {
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {searchMut.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
             ) : (
               <Search className="h-4 w-4" />
             )}
@@ -201,7 +201,7 @@ export function SearchPage() {
         {/* Loading */}
         {searchMut.isPending && (
           <div role="status" className="mt-8 flex items-center justify-center gap-2 text-zinc-500">
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 className="h-5 w-5 motion-safe:animate-spin" />
             Searching your files...
           </div>
         )}

@@ -134,7 +134,7 @@ export function DashboardPage() {
         role="status"
         aria-label="Loading account"
       >
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
       </div>
     );
   }
@@ -288,7 +288,14 @@ export function DashboardPage() {
                       </span>
                     </p>
                     <p className="text-base text-zinc-400">{card.label}</p>
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div
+                      className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800"
+                      role="progressbar"
+                      aria-valuenow={count}
+                      aria-valuemin={0}
+                      aria-valuemax={limit}
+                      aria-label={card.label}
+                    >
                       <div
                         className={cn(
                           'h-full rounded-full transition-all',

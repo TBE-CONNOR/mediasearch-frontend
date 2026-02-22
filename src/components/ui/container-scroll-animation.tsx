@@ -1,4 +1,4 @@
-import { useRef, useSyncExternalStore, useCallback } from 'react';
+import { useRef, useSyncExternalStore } from 'react';
 import {
   useScroll,
   useTransform,
@@ -8,15 +8,23 @@ import {
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const MD_QUERY = '(max-width: 768px)';
+const mq = typeof window !== 'undefined' ? window.matchMedia(MD_QUERY) : null;
+
+function subscribe(callback: () => void) {
+  mq?.addEventListener('change', callback);
+  return () => mq?.removeEventListener('change', callback);
+}
+
+function getSnapshot() {
+  return mq?.matches ?? false;
+}
+
+function getServerSnapshot() {
+  return false;
+}
 
 function useMobileBreakpoint(): boolean {
-  const subscribe = useCallback((cb: () => void) => {
-    const mql = window.matchMedia(MD_QUERY);
-    mql.addEventListener('change', cb);
-    return () => mql.removeEventListener('change', cb);
-  }, []);
-  const getSnapshot = useCallback(() => window.matchMedia(MD_QUERY).matches, []);
-  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 export function ContainerScroll({

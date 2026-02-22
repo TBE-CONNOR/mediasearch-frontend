@@ -3,7 +3,7 @@ import type { Tier } from '@/types/domain';
 
 export interface CreateCheckoutRequest {
   price_id: string;
-  tier: Tier;
+  tier: Exclude<Tier, 'free'>;
   success_url: string;
   cancel_url: string;
 }

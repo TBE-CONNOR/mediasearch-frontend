@@ -94,15 +94,15 @@ export function NavBar() {
       {/* Accent gradient line */}
       <div className="h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-16">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:h-[4.5rem]">
         {/* Brand — split color wordmark */}
-        <Link to="/" className={cn('flex items-center gap-2 rounded text-lg font-bold', focusRing)}>
+        <Link to="/" className={cn('flex items-center gap-2 rounded text-xl font-bold sm:text-2xl', focusRing)}>
           <span className="text-white">Media</span>
           <span className="-ml-2 text-blue-400">Search</span>
         </Link>
 
         {/* Nav group — pill container */}
-        <div className="flex items-center gap-0.5 rounded-full border border-zinc-800/60 bg-zinc-900/50 px-1 py-0.5 sm:gap-1 sm:px-1.5 sm:py-1">
+        <div className="flex items-center gap-1 rounded-full border border-zinc-800/60 bg-zinc-900/50 px-1.5 py-1 sm:gap-1.5 sm:px-2 sm:py-1.5">
           {/* Primary links — always visible */}
           {PRIMARY_LINKS.map(({ to, label }) => (
             <Link
@@ -110,7 +110,7 @@ export function NavBar() {
               to={to}
               aria-current={isActive(to, location.pathname) ? 'page' : undefined}
               className={cn(
-                'rounded-full px-1.5 py-1 text-xs font-medium transition-colors sm:px-3 sm:py-1 sm:text-sm',
+                'rounded-full px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-4 sm:py-1.5 sm:text-base',
                 isActive(to, location.pathname)
                   ? 'bg-blue-600/10 text-blue-400'
                   : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
@@ -128,7 +128,7 @@ export function NavBar() {
               to={to}
               aria-current={isActive(to, location.pathname) ? 'page' : undefined}
               className={cn(
-                'hidden rounded-full px-3 py-1 text-sm font-medium transition-colors sm:inline-flex',
+                'hidden rounded-full px-4 py-1.5 text-base font-medium transition-colors sm:inline-flex',
                 isActive(to, location.pathname)
                   ? 'bg-blue-600/10 text-blue-400'
                   : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
@@ -144,7 +144,7 @@ export function NavBar() {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Tier badge */}
           <span className={cn(
-            'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase sm:px-2.5 sm:text-xs',
+            'rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase sm:px-3 sm:text-sm',
             TIER_COLORS[tier ?? 'free'],
           )}>
             {TIER_LABELS[tier ?? 'free']}

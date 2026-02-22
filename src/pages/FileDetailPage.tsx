@@ -75,9 +75,9 @@ export function FileDetailPage() {
 
   if (error || !file) {
     return (
-      <div className="p-6">
-        <div className="mx-auto max-w-2xl">
-          <div role="alert" className="rounded-lg border border-red-800 bg-red-900/30 p-4 text-sm text-red-400">
+      <div className="p-6 sm:p-8">
+        <div className="mx-auto max-w-3xl">
+          <div role="alert" className="rounded-lg border border-red-800 bg-red-900/30 p-4 text-base text-red-400">
             <p>
               {is404
                 ? 'File not found. It may have been deleted.'
@@ -98,7 +98,7 @@ export function FileDetailPage() {
           </div>
           <Link
             to="/files"
-            className="mt-4 inline-flex items-center gap-1 text-sm text-blue-400 hover:underline"
+            className="mt-4 inline-flex items-center gap-1 text-base text-blue-400 hover:underline"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Files
           </Link>
@@ -108,20 +108,20 @@ export function FileDetailPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mx-auto max-w-2xl">
+    <div className="p-6 sm:p-8">
+      <div className="mx-auto max-w-3xl">
         <Link
           to="/files"
-          className="mb-4 inline-flex items-center gap-1 text-sm text-blue-400 hover:underline"
+          className="mb-4 inline-flex items-center gap-1 text-base text-blue-400 hover:underline"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Files
+          <ArrowLeft className="h-5 w-5" /> Back to Files
         </Link>
 
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
           {/* Header */}
           <div className="mb-6 flex items-start justify-between">
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-xl font-bold text-white">
+              <h1 className="truncate text-2xl font-bold text-white">
                 {file.file_name}
               </h1>
               <StatusLine status={file.processing_status} />
@@ -129,7 +129,7 @@ export function FileDetailPage() {
           </div>
 
           {/* Metadata */}
-          <dl className="space-y-3 text-sm">
+          <dl className="space-y-3 text-base">
             <Row label="File ID" value={file.file_id} mono />
             <Row label="Content Type" value={file.content_type} />
             <Row label="Uploaded" value={formatDateTime(file.upload_date)} />
@@ -142,10 +142,24 @@ export function FileDetailPage() {
               <Row label="Completed" value={formatDateTime(file.completed_at)} />
             )}
             {file.extracted_content_length != null && (
-              <Row
-                label="Extracted Content"
-                value={`${file.extracted_content_length.toLocaleString()} chars`}
-              />
+              <div>
+                <dt className="font-medium text-zinc-500">Extracted Content</dt>
+                <dd className="mt-0.5">
+                  <p className="text-white">
+                    {file.extracted_content_length.toLocaleString()} characters extracted
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    This content is indexed and searchable. Use{' '}
+                    <Link
+                      to="/search"
+                      className="text-blue-400 hover:text-blue-300 hover:underline"
+                    >
+                      Search
+                    </Link>
+                    {' '}to find information within this file.
+                  </p>
+                </dd>
+              </div>
             )}
 
             {/* Failed-only: display as raw string (gotcha #10 -- Java-style, never JSON.parse) */}
@@ -167,12 +181,12 @@ export function FileDetailPage() {
                 type="button"
                 onClick={() => downloadMut.mutate()}
                 disabled={downloadMut.isPending}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
               >
                 {downloadMut.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <Download className="h-4 w-4" />
+                  <Download className="h-5 w-5" />
                 )}
                 Download
               </button>
@@ -183,9 +197,9 @@ export function FileDetailPage() {
               <button
                 type="button"
                 onClick={() => setConfirmDelete(true)}
-                className="inline-flex items-center gap-2 rounded-lg border border-red-800 px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50"
+                className="inline-flex items-center gap-2 rounded-lg border border-red-800 px-5 py-2.5 text-base font-medium text-red-400 transition-colors hover:bg-red-900/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-5 w-5" />
                 Delete
               </button>
             ) : (
@@ -194,14 +208,14 @@ export function FileDetailPage() {
                   type="button"
                   onClick={() => deleteMut.mutate()}
                   disabled={deleteMut.isPending}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 disabled:opacity-50"
+                  className="rounded-lg bg-red-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 disabled:opacity-50"
                 >
                   {deleteMut.isPending ? 'Deleting...' : 'Confirm Delete'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
+                  className="rounded-lg border border-zinc-700 px-5 py-2.5 text-base font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
                 >
                   Cancel
                 </button>

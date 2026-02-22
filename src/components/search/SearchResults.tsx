@@ -48,7 +48,7 @@ export function SearchResults({
           aria-controls="tabpanel-gallery"
           tabIndex={viewMode === 'gallery' ? 0 : -1}
           onClick={() => onChangeViewMode('gallery')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
+          className={`px-5 py-2.5 text-base font-medium transition-colors ${
             viewMode === 'gallery'
               ? 'bg-blue-600 text-white'
               : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
@@ -65,7 +65,7 @@ export function SearchResults({
           aria-controls="tabpanel-analysis"
           tabIndex={viewMode === 'analysis' ? 0 : -1}
           onClick={() => onChangeViewMode('analysis')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
+          className={`px-5 py-2.5 text-base font-medium transition-colors ${
             viewMode === 'analysis'
               ? 'bg-blue-600 text-white'
               : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'

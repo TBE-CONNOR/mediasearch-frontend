@@ -115,6 +115,21 @@ export function getModalityIcon(contentType: string) {
   }
 }
 
+/** Whether a file has a previewable media type with a URL available */
+export function isPreviewable(file: {
+  processing_status: string;
+  presigned_url?: string;
+  content_type: string;
+}): boolean {
+  if (file.processing_status !== 'completed') return false;
+  if (!file.presigned_url) return false;
+  return (
+    file.content_type.startsWith('image/') ||
+    file.content_type.startsWith('video/') ||
+    file.content_type.startsWith('audio/')
+  );
+}
+
 // ─── File validation ───────────────────────────────────────────────
 
 function isImageFile(file: File): boolean {

@@ -29,6 +29,32 @@ function priceEnv(key: string): string | null {
   return val;
 }
 
+export type ModalityPrefix = 'image/' | 'video/' | 'audio/' | 'application/';
+
+export interface TierLimits {
+  limits: Record<ModalityPrefix, number>;
+  period: 'lifetime' | 'month';
+}
+
+export const TIER_LIMITS: Record<Tier, TierLimits> = {
+  free: {
+    limits: { 'image/': 25, 'video/': 5, 'audio/': 2, 'application/': 2 },
+    period: 'lifetime',
+  },
+  pro: {
+    limits: { 'image/': 500, 'video/': 60, 'audio/': 10, 'application/': 3 },
+    period: 'month',
+  },
+  plus: {
+    limits: { 'image/': 750, 'video/': 90, 'audio/': 15, 'application/': 4 },
+    period: 'month',
+  },
+  power: {
+    limits: { 'image/': 2500, 'video/': 250, 'audio/': 25, 'application/': 10 },
+    period: 'month',
+  },
+};
+
 export const TIERS: readonly PricingTier[] = [
   {
     id: 'free',

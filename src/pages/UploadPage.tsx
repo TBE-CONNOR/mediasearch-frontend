@@ -41,29 +41,29 @@ export function UploadPage() {
   });
 
   return (
-    <div className="p-6">
-      <div className="mx-auto max-w-2xl">
-        <h1 className="mb-6 text-2xl font-bold text-white">Upload Files</h1>
+    <div className="p-6 sm:p-8">
+      <div className="mx-auto max-w-4xl">
+        <h1 className="mb-6 text-3xl font-bold text-white">Upload Files</h1>
 
         <div
           {...getRootProps()}
           aria-label="File upload area — drag and drop or click to browse"
-          className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-colors ${
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-16 transition-colors ${
             isDragActive
               ? 'border-blue-500 bg-blue-600/10'
               : 'border-zinc-700 bg-zinc-900/50 hover:border-zinc-600'
           }`}
         >
           <input {...getInputProps()} />
-          <Upload className="mb-3 h-10 w-10 text-zinc-500" />
+          <Upload className="mb-3 h-12 w-12 text-zinc-500" />
           {isDragActive ? (
-            <p className="text-blue-400">Drop files here...</p>
+            <p className="text-lg text-blue-400">Drop files here...</p>
           ) : (
             <>
-              <p className="text-zinc-400">
+              <p className="text-lg text-zinc-400">
                 Drag & drop files here, or click to browse
               </p>
-              <p className="mt-1 text-sm text-zinc-500">
+              <p className="mt-1 text-base text-zinc-500">
                 Images, video, audio, documents (HEIC auto-converted)
               </p>
             </>
@@ -84,11 +84,11 @@ export function UploadPage() {
 
 function UploadItemRow({ item }: { item: UploadItem }) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
       <div className="flex items-center gap-3">
         <StatusIcon stage={item.stage} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-white">
+          <p className="truncate text-base font-medium text-white">
             {item.fileName}
           </p>
           <StatusText item={item} />
@@ -117,39 +117,39 @@ function UploadItemRow({ item }: { item: UploadItem }) {
 function StatusIcon({ stage }: { stage: UploadItem['stage'] }) {
   switch (stage) {
     case 'queued':
-      return <Clock className="h-5 w-5 shrink-0 text-zinc-500" />;
+      return <Clock className="h-6 w-6 shrink-0 text-zinc-500" />;
     case 'preparing':
     case 'uploading':
     case 'processing':
       return (
-        <Loader2 className="h-5 w-5 shrink-0 animate-spin text-blue-500" />
+        <Loader2 className="h-6 w-6 shrink-0 animate-spin text-blue-500" />
       );
     case 'completed':
-      return <CheckCircle className="h-5 w-5 shrink-0 text-green-400" />;
+      return <CheckCircle className="h-6 w-6 shrink-0 text-green-400" />;
     case 'failed':
-      return <XCircle className="h-5 w-5 shrink-0 text-red-400" />;
+      return <XCircle className="h-6 w-6 shrink-0 text-red-400" />;
     case 'rejected':
-      return <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />;
+      return <AlertTriangle className="h-6 w-6 shrink-0 text-amber-400" />;
   }
 }
 
 function StatusText({ item }: { item: UploadItem }) {
   switch (item.stage) {
     case 'queued':
-      return <p className="text-xs text-zinc-500">Waiting...</p>;
+      return <p className="text-sm text-zinc-500">Waiting...</p>;
     case 'preparing':
-      return <p className="text-xs text-zinc-500">Preparing...</p>;
+      return <p className="text-sm text-zinc-500">Preparing...</p>;
     case 'uploading':
       return (
-        <p className="text-xs text-zinc-500">Uploading... {item.progress}%</p>
+        <p className="text-sm text-zinc-500">Uploading... {item.progress}%</p>
       );
     case 'processing':
-      return <p className="text-xs text-zinc-500">Processing...</p>;
+      return <p className="text-sm text-zinc-500">Processing...</p>;
     case 'completed':
-      return <p className="text-xs text-green-400">Ready</p>;
+      return <p className="text-sm text-green-400">Ready</p>;
     case 'failed':
       return (
-        <p className="text-xs text-red-400">
+        <p className="text-sm text-red-400">
           {item.error || 'Processing failed'}
           {item.quotaExceeded && (
             <>
@@ -166,7 +166,7 @@ function StatusText({ item }: { item: UploadItem }) {
       );
     case 'rejected':
       return (
-        <p className="text-xs text-amber-400">
+        <p className="text-sm text-amber-400">
           {item.error || 'File rejected'}
         </p>
       );

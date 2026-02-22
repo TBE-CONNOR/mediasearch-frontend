@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Search, Loader2 } from 'lucide-react';
 import { listFiles } from '@/api/files';
@@ -19,6 +19,8 @@ export function SearchPage() {
   const setStoreFileIds = useSearchStore((s) => s.setSelectedFileIds);
   const setStoreLastResult = useSearchStore((s) => s.setLastResult);
   const lastResult = useSearchStore((s) => s.lastResult);
+  const pendingSearch = useSearchStore((s) => s.pendingSearch);
+  const setPendingSearch = useSearchStore((s) => s.setPendingSearch);
 
   const hasActiveUploads = useUploadStore((s) =>
     s.uploads.some(
@@ -67,6 +69,19 @@ export function SearchPage() {
     },
   });
 
+  // Auto-search when arriving from dashboard with a pending query
+  useEffect(() => {
+    if (pendingSearch && savedQuery.trim()) {
+      setPendingSearch(false);
+      setAnswerOpen(true);
+      searchMut.mutate({
+        query: savedQuery.trim(),
+        fileIds: savedFileIds.length > 0 ? savedFileIds : undefined,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once on mount when pending
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = query.trim();
@@ -92,9 +107,9 @@ export function SearchPage() {
   const displayResult = searchMut.data ?? lastResult;
 
   return (
-    <div className="p-6">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="mb-6 text-2xl font-bold text-white">Search</h1>
+    <div className="p-6 sm:p-8">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="mb-6 text-3xl font-bold text-white">Search</h1>
 
         {/* Search form */}
         <form onSubmit={handleSubmit} className="flex gap-2">
@@ -107,12 +122,12 @@ export function SearchPage() {
             aria-label="Search your files"
             // eslint-disable-next-line jsx-a11y/no-autofocus -- primary action on a dedicated search page
             autoFocus
-            className="flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-base text-white placeholder-zinc-500 sm:text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+            className="flex-1 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-base text-white placeholder-zinc-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
           />
           <button
             type="submit"
             disabled={searchMut.isPending || !query.trim()}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {searchMut.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -139,13 +154,13 @@ export function SearchPage() {
         {(hasProcessingFiles || hasActiveUploads) && (
           <div
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-lg border border-amber-800 bg-amber-900/30 p-4"
+            className="mt-4 flex items-center gap-3 rounded-lg border border-amber-800 bg-amber-900/30 p-5"
           >
             <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-amber-500" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
             </span>
-            <p className="text-sm text-amber-400">
+            <p className="text-base text-amber-400">
               Your files are still being indexed &mdash; results may be
               incomplete. This usually takes under a minute.
             </p>
@@ -156,13 +171,13 @@ export function SearchPage() {
         {!hasProcessingFiles && !hasActiveUploads && kbSyncPending && (
           <div
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-lg border border-blue-800 bg-blue-900/30 p-4"
+            className="mt-4 flex items-center gap-3 rounded-lg border border-blue-800 bg-blue-900/30 p-5"
           >
             <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-blue-500" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-blue-500" />
             </span>
-            <p className="text-sm text-blue-400">
+            <p className="text-base text-blue-400">
               Files processed &mdash; updating search index. New results
               available within 2 minutes.
             </p>
@@ -205,8 +220,8 @@ export function SearchPage() {
         {/* Empty state */}
         {!displayResult && !searchMut.isPending && (
           <div className="mt-12 text-center text-zinc-500">
-            <Search className="mx-auto h-10 w-10 text-zinc-600" />
-            <p className="mt-3 text-sm">Search your files with natural language</p>
+            <Search className="mx-auto h-12 w-12 text-zinc-600" />
+            <p className="mt-3 text-base">Search your files with natural language</p>
           </div>
         )}
       </div>

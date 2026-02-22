@@ -12,7 +12,7 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
   const isLong = citation.text_preview.length > CITATION_PREVIEW_LIMIT;
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
           {(citation.file?.presigned_url || citation.presigned_url) && citation.content_type === 'image' ? (
@@ -36,12 +36,12 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
           {citation.file ? (
             <Link
               to={`/files/${citation.file.file_id}`}
-              className="truncate text-sm font-medium text-blue-400 hover:underline"
+              className="truncate text-base font-medium text-blue-400 hover:underline"
             >
               {fileName}
             </Link>
           ) : (
-            <span className="truncate text-sm font-medium text-zinc-300">
+            <span className="truncate text-base font-medium text-zinc-300">
               {fileName}
             </span>
           )}
@@ -62,14 +62,14 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
                 style={{ width: `${Math.round(score * 100)}%` }}
               />
             </div>
-            <span className="text-xs text-zinc-500">
+            <span className="text-sm text-zinc-500">
               {(score * 100).toFixed(0)}%
             </span>
           </div>
         )}
       </div>
 
-      <p className="mt-2 text-sm text-zinc-400">
+      <p className="mt-2 text-base text-zinc-400">
         {isLong && !expanded
           ? citation.text_preview.slice(0, CITATION_PREVIEW_LIMIT) + '...'
           : citation.text_preview}
@@ -79,7 +79,7 @@ export function CitationCard({ citation }: { citation: EnrichedCitation }) {
           type="button"
           onClick={() => setExpanded((e) => !e)}
           aria-expanded={expanded}
-          className="mt-1 text-xs text-blue-400 transition-colors hover:text-blue-300"
+          className="mt-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
         >
           {expanded ? 'Show less' : 'Read more'}
         </button>

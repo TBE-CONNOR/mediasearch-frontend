@@ -34,7 +34,7 @@ export function MediaGalleryView({
 
   if (uniqueCitations.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">No media results to display.</p>
+      <p className="text-base text-zinc-500">No media results to display.</p>
     );
   }
 
@@ -153,21 +153,21 @@ function MediaCard({
         />
       )}
 
-      <div className="p-3">
+      <div className="p-4">
         {/* Filename + score */}
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate text-sm font-medium text-white">
+          <span className="truncate text-base font-medium text-white">
             {fileName}
           </span>
           {score != null && (
-            <span className="shrink-0 text-xs text-zinc-500">
+            <span className="shrink-0 text-sm text-zinc-500">
               {(score * 100).toFixed(0)}%
             </span>
           )}
         </div>
 
         {/* Text preview */}
-        <p className="mt-1.5 text-xs text-zinc-400">
+        <p className="mt-1.5 text-sm text-zinc-400">
           {isLong && !expanded
             ? citation.text_preview.slice(0, GALLERY_PREVIEW_LIMIT) + '...'
             : citation.text_preview}
@@ -176,7 +176,7 @@ function MediaCard({
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="relative z-10 mt-1 text-xs text-blue-400 transition-colors hover:text-blue-300"
+            className="relative z-10 mt-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
           >
             {expanded ? 'Show less' : 'Read more'}
           </button>

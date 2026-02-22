@@ -140,20 +140,20 @@ export function SubscriptionPage() {
       {/* Background gradient */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.08),_transparent_70%)]" />
 
-      <div className="relative mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         {/* ── Header ── */}
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reducedMotion ? 0 : 0.5 }}
         >
-          <p className="text-sm font-medium text-zinc-500">Account</p>
-          <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
+          <p className="text-base font-medium text-zinc-500">Account</p>
+          <h1 className="mt-1 text-3xl font-bold text-white sm:text-4xl">
             Subscription
           </h1>
           <div className="mt-3 flex items-center gap-3">
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${TIER_COLORS[tier]}`}>
-              <Sparkles className="h-3.5 w-3.5" />
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-base font-semibold ${TIER_COLORS[tier]}`}>
+              <Sparkles className="h-4 w-4" />
               {TIER_LABELS[tier]} Plan
             </span>
             {sub && (
@@ -203,7 +203,7 @@ export function SubscriptionPage() {
             <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
               <div className="h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
               <div className="p-6">
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-xl font-semibold text-white">
                   Your{' '}
                   <span className={`bg-gradient-to-r bg-clip-text text-transparent ${TIER_GRADIENTS[tier]}`}>
                     {TIER_LABELS[tier]}
@@ -214,7 +214,7 @@ export function SubscriptionPage() {
                   {tierConfig.features.map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-center gap-2.5 text-sm text-zinc-300"
+                      className="flex items-center gap-2.5 text-base text-zinc-300"
                     >
                       <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600/10">
                         <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
@@ -241,7 +241,7 @@ function StatusPill({ sub }: { sub: SubscriptionInfo }) {
     dot: 'bg-zinc-400',
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 text-sm font-medium ${cfg.style}`}>
+    <span className={`inline-flex items-center gap-1.5 text-base font-medium ${cfg.style}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
       {cfg.label}
     </span>
@@ -290,7 +290,7 @@ function PaidPlanDetails({
 
   return (
     <>
-      <h2 className="text-lg font-semibold text-white">
+      <h2 className="text-xl font-semibold text-white">
         {TIER_LABELS[tier]} Plan Details
       </h2>
 
@@ -307,8 +307,8 @@ function PaidPlanDetails({
               <stat.icon className="h-4 w-4 text-blue-400" />
             </div>
             <div>
-              <p className="text-xs font-medium text-zinc-500">{stat.label}</p>
-              <p className={`mt-0.5 text-sm font-semibold ${stat.valueClass}`}>{stat.value}</p>
+              <p className="text-sm font-medium text-zinc-500">{stat.label}</p>
+              <p className={`mt-0.5 text-base font-semibold ${stat.valueClass}`}>{stat.value}</p>
             </div>
           </motion.div>
         ))}
@@ -320,7 +320,7 @@ function PaidPlanDetails({
           type="button"
           onClick={() => portalMut.mutate()}
           disabled={portalMut.isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
         >
           {portalMut.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -331,7 +331,7 @@ function PaidPlanDetails({
         </button>
         <Link
           to="/pricing"
-          className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
+          className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-5 py-2.5 text-base font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
         >
           Compare Plans
         </Link>
@@ -361,8 +361,8 @@ function FreePlanDetails({
   return (
     <>
       {/* Current free features */}
-      <h2 className="text-lg font-semibold text-white">Free Plan</h2>
-      <p className="mt-1 text-sm text-zinc-500">
+      <h2 className="text-xl font-semibold text-white">Free Plan</h2>
+      <p className="mt-1 text-base text-zinc-500">
         You&apos;re on the free tier. Upgrade anytime to unlock more uploads and features.
       </p>
 
@@ -371,7 +371,7 @@ function FreePlanDetails({
           {tierConfig.features.map((feature) => (
             <li
               key={feature}
-              className="flex items-center gap-2.5 text-sm text-zinc-400"
+              className="flex items-center gap-2.5 text-base text-zinc-400"
             >
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-zinc-800">
                 <span className="h-1.5 w-1.5 rounded-full bg-zinc-500" />

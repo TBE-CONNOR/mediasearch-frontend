@@ -7,8 +7,9 @@ import { listFiles } from '@/api/files';
 import type { FileItem, ProcessingStatus } from '@/api/files';
 import { QuotaErrorBanner } from '@/components/QuotaError';
 import { is429 } from '@/utils/httpUtils';
-import { formatDate, getFileIcon, isTerminalStatus } from '@/utils/fileUtils';
+import { formatDate, getFileIcon, isTerminalStatus, isPreviewable } from '@/utils/fileUtils';
 import { getStatusInfo } from '@/utils/statusConfig';
+import { MediaPreviewModal } from '@/components/MediaPreviewModal';
 import { FILES_REFETCH_INTERVAL_MS } from '@/config/constants';
 
 export function FilesPage() {
@@ -31,15 +32,15 @@ export function FilesPage() {
   });
 
   return (
-    <div className="p-6">
-      <div className="mx-auto max-w-4xl">
+    <div className="p-6 sm:p-8">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">My Files</h1>
+          <h1 className="text-3xl font-bold text-white">My Files</h1>
           <Link
             to="/upload"
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-blue-700"
           >
-            <Upload className="h-4 w-4" />
+            <Upload className="h-5 w-5" />
             Upload
           </Link>
         </div>
@@ -67,12 +68,12 @@ export function FilesPage() {
         )}
 
         {files && files.length === 0 && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-12 text-center">
-            <FileText className="mx-auto mb-3 h-10 w-10 text-zinc-600" />
-            <p className="text-zinc-400">No files yet.</p>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-16 text-center">
+            <FileText className="mx-auto mb-3 h-12 w-12 text-zinc-600" />
+            <p className="text-lg text-zinc-400">No files yet.</p>
             <Link
               to="/upload"
-              className="mt-2 inline-block text-sm text-blue-400 hover:underline"
+              className="mt-2 inline-block text-base text-blue-400 hover:underline"
             >
               Upload your first file
             </Link>
@@ -81,10 +82,10 @@ export function FilesPage() {
 
         {files && files.length > 0 && (
           <>
-            <p className="mb-4 text-sm text-zinc-500">
+            <p className="mb-4 text-base text-zinc-500">
               {files.length} file{files.length !== 1 ? 's' : ''}
             </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {files.map((file) => (
                 <FileCard key={file.file_id} file={file} />
               ))}
@@ -97,25 +98,53 @@ export function FilesPage() {
 }
 
 function FileCard({ file }: { file: FileItem }) {
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const canPreview = isPreviewable(file);
+
   return (
-    <Link
-      to={`/files/${file.file_id}`}
-      aria-label={`${file.file_name} — ${getStatusInfo(file.processing_status).label}`}
-      className="block overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700"
-    >
-      <FileThumbnail file={file} />
-      <div className="p-3">
-        <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-sm font-medium text-white">
-            {file.file_name}
+    <>
+      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700">
+        {canPreview ? (
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            className="block w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-inset"
+            aria-label={`Preview ${file.file_name}`}
+          >
+            <FileThumbnail file={file} />
+          </button>
+        ) : (
+          <Link to={`/files/${file.file_id}`} aria-label={`View ${file.file_name} details`}>
+            <FileThumbnail file={file} />
+          </Link>
+        )}
+
+        <Link
+          to={`/files/${file.file_id}`}
+          className="block p-4 transition-colors hover:bg-zinc-800/50"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-base font-medium text-white">
+              {file.file_name}
+            </p>
+            <StatusBadge status={file.processing_status} />
+          </div>
+          <p className="mt-1 text-sm text-zinc-500">
+            {formatDate(file.upload_date)}
           </p>
-          <StatusBadge status={file.processing_status} />
-        </div>
-        <p className="mt-1 text-xs text-zinc-500">
-          {formatDate(file.upload_date)}
-        </p>
+        </Link>
       </div>
-    </Link>
+
+      {canPreview && (
+        <MediaPreviewModal
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          contentType={file.content_type}
+          mediaUrl={file.presigned_url}
+          fileName={file.file_name}
+        />
+      )}
+    </>
   );
 }
 

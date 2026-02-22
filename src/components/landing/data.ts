@@ -96,7 +96,7 @@ export interface Testimonial {
 export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      'Kept downloading videos from TikTok and could never find them for the groupchat when I needed to! I save way too many things to search for something I saved a month ago lol.',
+      'Kept downloading videos from TikTok and could never find them for the groupchat when I needed to!',
     name: 'Brandon Ginn',
     designation: 'Computer Scientist',
     src: '/testimonials/Brandon_Ginn.jpg',

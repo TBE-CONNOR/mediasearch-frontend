@@ -44,7 +44,7 @@ export function LegalPage() {
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#09090b]">
+    <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-4">
         <div className="mx-auto max-w-4xl">
           <Link
@@ -86,7 +86,7 @@ export function LegalPage() {
                 aria-selected={activeTab === tab.id}
                 aria-controls={`panel-${tab.id}`}
                 onClick={() => handleTabClick(tab.id)}
-                className={`whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] ${
+                className={`whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                   activeTab === tab.id
                     ? 'bg-blue-600 text-white'
                     : 'text-zinc-400 hover:text-white'

@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { Loader2, FileText, Upload, RefreshCw } from 'lucide-react';
-import { createElement, useState } from 'react';
-import { VideoThumbnail } from '@/components/VideoThumbnail';
+import { useState } from 'react';
+import { FileThumbnail } from '@/components/FileThumbnail';
 import { listFiles } from '@/api/files';
 import type { FileItem, ProcessingStatus } from '@/api/files';
 import { QuotaErrorBanner } from '@/components/QuotaError';
 import { is429 } from '@/utils/httpUtils';
-import { formatDate, getFileIcon, isTerminalStatus, isPreviewable } from '@/utils/fileUtils';
+import { formatDate, isTerminalStatus, isPreviewable } from '@/utils/fileUtils';
 import { getStatusInfo } from '@/utils/statusConfig';
 import { MediaPreviewModal } from '@/components/MediaPreviewModal';
 import { FILES_REFETCH_INTERVAL_MS } from '@/config/constants';
@@ -145,44 +145,6 @@ function FileCard({ file }: { file: FileItem }) {
         />
       )}
     </>
-  );
-}
-
-function FileThumbnail({ file }: { file: FileItem }) {
-  const [imgError, setImgError] = useState(false);
-  const isImage = file.content_type.startsWith('image/');
-  const isVideo = file.content_type.startsWith('video/');
-  const isCompleted = file.processing_status === 'completed';
-
-  // Image thumbnail
-  if (isImage && !!file.presigned_url && isCompleted && !imgError) {
-    return (
-      <div className="aspect-video bg-zinc-800">
-        <img
-          src={file.presigned_url}
-          alt=""
-          onError={() => setImgError(true)}
-          className="h-full w-full object-cover"
-        />
-      </div>
-    );
-  }
-
-  // Video thumbnail via native <video> element (no CORS needed)
-  if (isVideo && isCompleted && file.presigned_url) {
-    return (
-      <VideoThumbnail url={file.presigned_url} contentType={file.content_type} />
-    );
-  }
-
-  // Fallback icon
-  return (
-    <div className="flex aspect-video items-center justify-center bg-zinc-800/50">
-      {/* createElement avoids eslint react-hooks false positive on dynamic component */}
-      {createElement(getFileIcon(file.content_type), {
-        className: 'h-10 w-10 text-zinc-600',
-      })}
-    </div>
   );
 }
 

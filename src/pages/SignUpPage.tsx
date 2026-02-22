@@ -8,18 +8,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { ATCShader } from '@/components/ui/atc-shader';
 import { Footer } from '@/components/Footer';
-import { AWS_CONFIG } from '@/config/aws';
-
-function getGoogleAuthUrl(): string {
-  const params = new URLSearchParams({
-    client_id: AWS_CONFIG.userPoolClientId,
-    response_type: 'code',
-    scope: 'openid email profile',
-    identity_provider: 'Google',
-    redirect_uri: `${AWS_CONFIG.appUrl}/auth/callback`,
-  });
-  return `${AWS_CONFIG.cognitoDomain}/oauth2/authorize?${params.toString()}`;
-}
+import { getGoogleAuthUrl } from '@/utils/authUtils';
 
 const passwordRules = [
   { label: '8+ characters', test: (p: string) => p.length >= 8 },
@@ -48,7 +37,7 @@ export function SignUpPage() {
 
   if (!authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#09090b]" role="status" aria-label="Loading">
+      <div className="flex min-h-screen items-center justify-center bg-background" role="status" aria-label="Loading">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
       </div>
     );
@@ -69,13 +58,13 @@ export function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#09090b]">
+    <div className="flex min-h-screen flex-col bg-background">
       <main className="flex flex-1">
         {/* ── Left brand panel — desktop only ── */}
         {isDesktop && (
           <div className="relative flex w-1/2 items-center justify-center overflow-hidden">
             <ATCShader />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent to-[#09090b]/80" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent to-background/80" />
 
             <motion.div
               className="relative z-10 px-12 text-center"
@@ -85,7 +74,7 @@ export function SignUpPage() {
             >
               <Link
                 to="/"
-                className="inline-flex text-5xl font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] rounded"
+                className="inline-flex text-5xl font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
               >
                 <span className="text-white">Media</span>
                 <span className="text-blue-400">Search</span>

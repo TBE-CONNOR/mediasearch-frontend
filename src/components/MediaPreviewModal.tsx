@@ -22,14 +22,20 @@ export function MediaPreviewModal({
   const reducedMotion = useReducedMotion();
   const closeRef = useRef<HTMLButtonElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<Element | null>(null);
 
-  // Lock body scroll when open
+  // Lock body scroll when open; save & restore focus trigger
   useEffect(() => {
     if (!open) return;
+    triggerRef.current = document.activeElement;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
+      // Restore focus to the element that opened the modal
+      if (triggerRef.current instanceof HTMLElement) {
+        triggerRef.current.focus();
+      }
     };
   }, [open]);
 

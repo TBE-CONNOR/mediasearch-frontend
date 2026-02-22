@@ -51,6 +51,7 @@ export function VideoThumbnail({
         preload="metadata"
         muted
         playsInline
+        aria-hidden="true"
         onLoadedData={handleLoadedData}
         onError={() => setFailed(true)}
         className="h-8 w-8 shrink-0 rounded object-cover"
@@ -66,6 +67,7 @@ export function VideoThumbnail({
         preload="metadata"
         muted
         playsInline
+        aria-hidden="true"
         onLoadedData={handleLoadedData}
         onError={() => setFailed(true)}
         className="h-full w-full object-cover pointer-events-none"

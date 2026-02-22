@@ -27,16 +27,17 @@ export function LandingPage() {
   }, [authReady, idToken, navigate]);
 
   if (!authReady) return (
-    <div className="flex min-h-screen items-center justify-center bg-[#09090b]">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
     </div>
   );
   if (idToken) return null;
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#09090b] text-white">
+    <div className="min-h-screen overflow-x-hidden bg-background text-white">
       <StickyNav />
 
+      <main>
       {/* ── Hero ── */}
       <section className="pt-16">
         <HeroSection
@@ -52,7 +53,7 @@ export function LandingPage() {
       </section>
 
       {/* ── Scroll Demo ── */}
-      <section className="bg-[#09090b] pt-20 md:pt-12">
+      <section className="bg-background pt-20 md:pt-12">
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, x: 100 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -238,6 +239,8 @@ export function LandingPage() {
           <PricingSection tiers={TIERS} />
         </motion.div>
       </section>
+
+      </main>
 
       {/* ── Footer ── */}
       <LandingFooter />

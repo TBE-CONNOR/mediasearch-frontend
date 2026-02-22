@@ -144,8 +144,56 @@ export function ATCShader() {
 
     animId = requestAnimationFrame(render);
 
+    // Handle GPU context loss (common on mobile)
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      cancelAnimationFrame(animId);
+    };
+
+    const handleContextRestored = () => {
+      // Re-setup and restart rendering after context is restored
+      const newVs = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
+      const newFs = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+      if (!newVs || !newFs) return;
+
+      const newProgram = gl.createProgram();
+      if (!newProgram) return;
+      gl.attachShader(newProgram, newVs);
+      gl.attachShader(newProgram, newFs);
+      gl.linkProgram(newProgram);
+      if (!gl.getProgramParameter(newProgram, gl.LINK_STATUS)) return;
+      gl.useProgram(newProgram);
+
+      const newBuf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, newBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+      const newAPos = gl.getAttribLocation(newProgram, 'aPosition');
+      gl.enableVertexAttribArray(newAPos);
+      gl.vertexAttribPointer(newAPos, 2, gl.FLOAT, false, 0, 0);
+
+      const newResLoc = gl.getUniformLocation(newProgram, 'iResolution');
+      const newTimeLoc = gl.getUniformLocation(newProgram, 'iTime');
+
+      resize();
+
+      const renderRestored = () => {
+        if (gl.isContextLost()) return;
+        gl.uniform2f(newResLoc, canvas.width, canvas.height);
+        gl.uniform1f(newTimeLoc, (performance.now() - startTime) / 1000.0);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        animId = requestAnimationFrame(renderRestored);
+      };
+      animId = requestAnimationFrame(renderRestored);
+    };
+
+    canvas.addEventListener('webglcontextlost', handleContextLost);
+    canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
     return () => {
       window.removeEventListener('resize', resize);
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
       cancelAnimationFrame(animId);
       if (!gl.isContextLost()) {
         gl.deleteProgram(program);

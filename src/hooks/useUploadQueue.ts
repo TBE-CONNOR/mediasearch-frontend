@@ -32,6 +32,10 @@ let kbSyncTimerId: ReturnType<typeof setTimeout> | undefined;
 const pendingQueue: Array<() => void> = [];
 let activeCount = 0;
 
+// Generation counter — increments on cleanup so in-flight uploads from
+// a previous generation know to bail out without corrupting activeCount.
+let generation = 0;
+
 function acquireSlot(): Promise<void> {
   if (activeCount < UPLOAD_MAX_CONCURRENT) {
     activeCount++;
@@ -105,6 +109,7 @@ function startPolling(id: string, fileId: string) {
 
 async function handleUpload(rawFile: File) {
   const id = crypto.randomUUID();
+  const myGeneration = generation;
 
   // Immediately visible in UI as queued
   useUploadStore
@@ -113,6 +118,10 @@ async function handleUpload(rawFile: File) {
 
   // Wait for a concurrency slot
   await acquireSlot();
+
+  // If cleanup happened while we were waiting, bail out — cleanup already
+  // reset activeCount, so we must NOT call releaseSlot.
+  if (generation !== myGeneration) return;
 
   // Hoist res above try so it's in scope after finally for startPolling
   let file = rawFile;
@@ -189,7 +198,8 @@ async function handleUpload(rawFile: File) {
       return;
     }
   } finally {
-    releaseSlot();
+    // Only release if cleanup hasn't reset the pool
+    if (generation === myGeneration) releaseSlot();
   }
 
   // Step 3: Poll processing status — slot already released
@@ -200,6 +210,7 @@ async function handleUpload(rawFile: File) {
 
 /** Cancel all in-flight uploads, stop all polling, drain queue, and clear state. Call on logout. */
 export function cleanupUploads() {
+  generation++;
   activeAborts.forEach((abort) => abort());
   activeAborts.clear();
   timeoutIds.forEach(clearTimeout);

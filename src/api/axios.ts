@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 export const api = axios.create({
   baseURL: AWS_CONFIG.apiBaseUrl,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 30_000,
 });
 
 // Track configs that have already been retried (avoids untyped _retried mutation)

@@ -43,7 +43,7 @@ export function AuthCallbackPage() {
   // Missing code — show error immediately (no effect needed)
   if (!code) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#09090b] px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div role="alert" className="w-full max-w-sm rounded-xl border border-red-800 bg-red-900/30 p-8 text-center">
           <p className="text-sm font-medium text-red-400">Sign-in failed</p>
           <p className="mt-2 text-xs text-red-500">
@@ -62,7 +62,7 @@ export function AuthCallbackPage() {
 
   if (exchangeError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#09090b] px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div role="alert" className="w-full max-w-sm rounded-xl border border-red-800 bg-red-900/30 p-8 text-center">
           <p className="text-sm font-medium text-red-400">Sign-in failed</p>
           <p className="mt-2 text-xs text-red-500">{exchangeError}</p>
@@ -78,7 +78,7 @@ export function AuthCallbackPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#09090b]" role="status" aria-label="Completing sign-in">
+    <div className="flex min-h-screen items-center justify-center bg-background" role="status" aria-label="Completing sign-in">
       <div className="text-center">
         <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-500" />
         <p className="mt-4 text-sm text-zinc-400">Completing sign-in...</p>

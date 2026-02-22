@@ -181,7 +181,7 @@ export function FileDetailPage() {
                 type="button"
                 onClick={() => downloadMut.mutate()}
                 disabled={downloadMut.isPending}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b] disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50"
               >
                 {downloadMut.isPending ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -215,7 +215,7 @@ export function FileDetailPage() {
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="rounded-lg border border-zinc-700 px-5 py-2.5 text-base font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
+                  className="rounded-lg border border-zinc-700 px-5 py-2.5 text-base font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   Cancel
                 </button>

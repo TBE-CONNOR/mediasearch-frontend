@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
+import { AnimatePresence, motion } from 'motion/react';
 import { LogOut, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useAuthStore } from '@/store/authStore';
 import { useAuth } from '@/auth/useAuth';
 import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
 const PRIMARY_LINKS = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -30,6 +32,7 @@ export function NavBar() {
   const { signOut } = useAuth();
   const tier = useAuthStore((s) => s.tier);
   const location = useLocation();
+  const reducedMotion = useReducedMotion();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -86,8 +89,8 @@ export function NavBar() {
       className={cn(
         'fixed top-0 z-50 w-full transition-[background-color,border-color,backdrop-filter] duration-300',
         scrolled
-          ? 'border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-lg'
-          : 'bg-[#09090b]/40 backdrop-blur-sm',
+          ? 'border-b border-zinc-800/80 bg-background/80 backdrop-blur-lg'
+          : 'bg-background/40 backdrop-blur-sm',
       )}
       aria-label="Main navigation"
     >
@@ -185,51 +188,57 @@ export function NavBar() {
       </div>
 
       {/* Mobile overflow menu */}
-      {mobileOpen && (
-        <div
-          ref={menuRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="More navigation options"
-          className={cn(
-            'border-t border-zinc-800/60 sm:hidden',
-            scrolled
-              ? 'bg-[#09090b]/80 backdrop-blur-lg'
-              : 'bg-[#09090b]/90 backdrop-blur-md',
-          )}
-        >
-          <div className="space-y-1 px-4 py-2">
-            {SECONDARY_LINKS.map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                onClick={closeMobileMenu}
-                aria-current={isActive(to, location.pathname) ? 'page' : undefined}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            ref={menuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="More navigation options"
+            initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.2 }}
+            className={cn(
+              'overflow-hidden border-t border-zinc-800/60 sm:hidden',
+              scrolled
+                ? 'bg-background/80 backdrop-blur-lg'
+                : 'bg-background/90 backdrop-blur-md',
+            )}
+          >
+            <div className="space-y-1 px-4 py-2">
+              {SECONDARY_LINKS.map(({ to, label }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={closeMobileMenu}
+                  aria-current={isActive(to, location.pathname) ? 'page' : undefined}
+                  className={cn(
+                    'block rounded-full px-3 py-2 text-sm font-medium transition-colors',
+                    isActive(to, location.pathname)
+                      ? 'bg-blue-600/10 text-blue-400'
+                      : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
+                    focusRing,
+                  )}
+                >
+                  {label}
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={signOut}
                 className={cn(
-                  'block rounded-full px-3 py-2 text-sm font-medium transition-colors',
-                  isActive(to, location.pathname)
-                    ? 'bg-blue-600/10 text-blue-400'
-                    : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white',
+                  'flex w-full items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30',
                   focusRing,
                 )}
               >
-                {label}
-              </Link>
-            ))}
-            <button
-              type="button"
-              onClick={signOut}
-              className={cn(
-                'flex w-full items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-900/30',
-                focusRing,
-              )}
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </button>
-          </div>
-        </div>
-      )}
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

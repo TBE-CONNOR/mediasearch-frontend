@@ -1,4 +1,4 @@
-import { createElement, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
@@ -13,6 +13,7 @@ import {
   Video,
   Music,
   FileText,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useSearchStore } from '@/store/searchStore';
@@ -20,12 +21,12 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { getSubscription } from '@/api/subscription';
 import { listFiles } from '@/api/files';
 import type { FileItem } from '@/api/files';
-import { VideoThumbnail } from '@/components/VideoThumbnail';
+import { FileThumbnail } from '@/components/FileThumbnail';
 import { MediaPreviewModal } from '@/components/MediaPreviewModal';
 import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
 import { TIER_LIMITS, type ModalityPrefix } from '@/config/pricing';
 import { cn } from '@/lib/utils';
-import { formatAmount, formatPeriodEnd, formatDate, getFileIcon, isPreviewable } from '@/utils/fileUtils';
+import { formatAmount, formatPeriodEnd, formatDate, isPreviewable } from '@/utils/fileUtils';
 import type { LucideIcon } from 'lucide-react';
 
 const QUICK_ACTIONS: {
@@ -74,12 +75,20 @@ export function DashboardPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: subData } = useQuery({
+  const {
+    data: subData,
+    error: subError,
+    refetch: refetchSub,
+  } = useQuery({
     queryKey: ['subscription'],
     queryFn: getSubscription,
   });
 
-  const { data: files } = useQuery({
+  const {
+    data: files,
+    error: filesError,
+    refetch: refetchFiles,
+  } = useQuery({
     queryKey: ['files'],
     queryFn: () => listFiles(),
   });
@@ -146,8 +155,34 @@ export function DashboardPage() {
     );
   }
 
+  const queryError = subError || filesError;
+
   return (
     <div className="flex-1 overflow-y-auto">
+      {/* ── Query error banner ── */}
+      {queryError && (
+        <div role="alert" className="mx-4 mt-4 rounded-lg border border-red-800 bg-red-900/30 p-4 sm:mx-6">
+          <p className="text-sm text-red-400">
+            {subError && filesError
+              ? 'Failed to load subscription and files.'
+              : subError
+                ? 'Failed to load subscription details.'
+                : 'Failed to load your files.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              if (subError) void refetchSub();
+              if (filesError) void refetchFiles();
+            }}
+            className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-red-400 transition-colors hover:text-red-300"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Retry
+          </button>
+        </div>
+      )}
+
       {/* ── Background gradient ── */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.08),_transparent_70%)]" />
 
@@ -330,7 +365,7 @@ export function DashboardPage() {
             <Link
               key={action.to}
               to={action.to}
-              className="group relative flex items-start gap-5 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700 hover:bg-zinc-900/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
+              className="group relative flex items-start gap-5 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700 hover:bg-zinc-900/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {/* Hover gradient glow */}
               <div
@@ -375,11 +410,11 @@ function RecentFileCard({ file }: { file: FileItem }) {
             className="block w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-inset"
             aria-label={`Preview ${file.file_name}`}
           >
-            <RecentFileThumbnail file={file} />
+            <FileThumbnail file={file} />
           </button>
         ) : (
           <Link to={`/files/${file.file_id}`} aria-label={`View ${file.file_name} details`}>
-            <RecentFileThumbnail file={file} />
+            <FileThumbnail file={file} />
           </Link>
         )}
 
@@ -409,39 +444,3 @@ function RecentFileCard({ file }: { file: FileItem }) {
   );
 }
 
-function RecentFileThumbnail({ file }: { file: FileItem }) {
-  const [imgError, setImgError] = useState(false);
-  const isImage = file.content_type.startsWith('image/');
-  const isVideo = file.content_type.startsWith('video/');
-  const isCompleted = file.processing_status === 'completed';
-
-  if (isImage && !!file.presigned_url && isCompleted && !imgError) {
-    return (
-      <div className="aspect-video bg-zinc-800">
-        <img
-          src={file.presigned_url}
-          alt=""
-          onError={() => setImgError(true)}
-          className="h-full w-full object-cover"
-        />
-      </div>
-    );
-  }
-
-  if (isVideo && isCompleted && file.presigned_url) {
-    return (
-      <VideoThumbnail
-        url={file.presigned_url}
-        contentType={file.content_type}
-      />
-    );
-  }
-
-  return (
-    <div className="flex aspect-video items-center justify-center bg-zinc-800/50">
-      {createElement(getFileIcon(file.content_type), {
-        className: 'h-10 w-10 text-zinc-600',
-      })}
-    </div>
-  );
-}

@@ -186,7 +186,7 @@ function MediaCard({
       {/* Stretched link — covers the whole card but sits below interactive elements */}
       <Link
         to={`/files/${citation.file.file_id}`}
-        className="absolute inset-0 z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]"
+        className="absolute inset-0 z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         aria-label={`View ${fileName} details`}
       />
     </div>

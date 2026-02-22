@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#09090b]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
 export function StickyNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -22,8 +22,8 @@ export function StickyNav() {
       className={cn(
         'fixed top-0 z-50 w-full transition-[background-color,border-color,backdrop-filter] duration-300',
         scrolled
-          ? 'border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-lg'
-          : 'bg-[#09090b]/40 backdrop-blur-sm',
+          ? 'border-b border-zinc-800/80 bg-background/80 backdrop-blur-lg'
+          : 'bg-background/40 backdrop-blur-sm',
       )}
       aria-label="Main navigation"
     >

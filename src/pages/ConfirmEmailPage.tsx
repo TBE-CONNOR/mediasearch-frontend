@@ -24,7 +24,7 @@ export function ConfirmEmailPage() {
 
   if (!authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#09090b]" role="status" aria-label="Loading">
+      <div className="flex min-h-screen items-center justify-center bg-background" role="status" aria-label="Loading">
         <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
       </div>
     );
@@ -47,7 +47,7 @@ export function ConfirmEmailPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#09090b]">
+    <div className="flex min-h-screen flex-col bg-background">
       <main className="flex flex-1 items-center justify-center">
         <div className="w-full max-w-sm rounded-xl border border-zinc-800 bg-zinc-900/50 p-8">
           <h1 className="mb-2 text-center text-2xl font-bold text-white">

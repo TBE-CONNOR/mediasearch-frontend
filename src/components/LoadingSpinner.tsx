@@ -6,7 +6,7 @@ export function LoadingSpinner({ className }: { className?: string }) {
     <div
       role="status"
       aria-label="Loading"
-      className={cn('flex min-h-screen items-center justify-center bg-[#09090b]', className)}
+      className={cn('flex min-h-screen items-center justify-center bg-background', className)}
     >
       <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
     </div>

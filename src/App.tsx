@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { cognitoClient } from '@/auth/CognitoClient';
@@ -65,6 +65,12 @@ const ReactQueryDevtools = import.meta.env.DEV
     )
   : () => null;
 
+/** Resets ErrorBoundary on route changes so navigation clears a crashed route. */
+function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  return <ErrorBoundary resetKeys={[location.pathname]}>{children}</ErrorBoundary>;
+}
+
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const applySession = (result: Awaited<ReturnType<typeof cognitoClient.restoreSession>>) => {
@@ -112,6 +118,7 @@ export default function App() {
       <ErrorBoundary>
         <AuthBootstrap>
           <BrowserRouter>
+            <RouteErrorBoundary>
             <Suspense fallback={<LoadingSpinner />}>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
@@ -140,6 +147,7 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
+            </RouteErrorBoundary>
           </BrowserRouter>
         </AuthBootstrap>
       </ErrorBoundary>

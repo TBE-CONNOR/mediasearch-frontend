@@ -9,7 +9,7 @@ const LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-zinc-800 bg-[#09090b] px-4 py-6">
+    <footer className="border-t border-zinc-800 bg-background px-4 py-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
         <p className="text-sm text-zinc-500">
           &copy; {new Date().getFullYear()} MediaSearch. All rights reserved.

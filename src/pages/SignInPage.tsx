@@ -138,6 +138,15 @@ export function SignInPage() {
                     />
                   </div>
 
+                  <div className="flex justify-end">
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm text-blue-400 transition-colors hover:text-blue-300 hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+
                   {error && (
                     <p role="alert" className="text-sm text-red-400">{error}</p>
                   )}

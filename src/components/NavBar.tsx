@@ -19,6 +19,7 @@ const SECONDARY_LINKS = [
   { to: '/files', label: 'Files' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/subscription', label: 'Subscription' },
+  { to: '/account', label: 'Account' },
 ] as const;
 
 function isActive(to: string, pathname: string): boolean {

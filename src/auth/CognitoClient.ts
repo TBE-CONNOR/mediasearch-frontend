@@ -278,6 +278,51 @@ export const cognitoClient = {
     return `${AWS_CONFIG.cognitoDomain}/logout?${params.toString()}`;
   },
 
+  forgotPassword(email: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const user = new CognitoUser({ Username: email, Pool: userPool });
+      user.forgotPassword({
+        onSuccess: () => resolve(),
+        onFailure: (err: Error) => reject(toError(err)),
+      });
+    });
+  },
+
+  confirmForgotPassword(
+    email: string,
+    code: string,
+    newPassword: string,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const user = new CognitoUser({ Username: email, Pool: userPool });
+      user.confirmPassword(code, newPassword, {
+        onSuccess: () => resolve(),
+        onFailure: (err: Error) => reject(toError(err)),
+      });
+    });
+  },
+
+  changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const email = currentEmail ?? userPool.getCurrentUser()?.getUsername();
+      if (!email) {
+        return reject(new Error('No active session. Please sign in again.'));
+      }
+      const user = new CognitoUser({ Username: email, Pool: userPool });
+      user.getSession(
+        (sessionErr: Error | null, session: CognitoUserSession | null) => {
+          if (sessionErr || !session) {
+            return reject(new Error('Session expired. Please sign in again.'));
+          }
+          user.changePassword(oldPassword, newPassword, (err) => {
+            if (err) return reject(toError(err));
+            resolve();
+          });
+        },
+      );
+    });
+  },
+
   signOut() {
     currentEmail = null;
     localStorage.removeItem(OAUTH_SESSION_KEY);

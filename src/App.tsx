@@ -56,6 +56,14 @@ const AuthCallbackPage = lazy(() =>
     default: m.AuthCallbackPage,
   })),
 );
+const ForgotPasswordPage = lazy(() =>
+  import('@/pages/ForgotPasswordPage').then((m) => ({
+    default: m.ForgotPasswordPage,
+  })),
+);
+const AccountPage = lazy(() =>
+  import('@/pages/AccountPage').then((m) => ({ default: m.AccountPage })),
+);
 const NotFoundPage = lazy(() =>
   import('@/pages/NotFoundPage').then((m) => ({
     default: m.NotFoundPage,
@@ -116,6 +124,7 @@ export default function App() {
                 <Route path="/sign-in" element={<SignInPage />} />
                 <Route path="/sign-up" element={<SignUpPage />} />
                 <Route path="/confirm-email" element={<ConfirmEmailPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/auth/callback" element={<AuthCallbackPage />} />
                 <Route path="/legal" element={<LegalPage />} />
                 <Route element={<ProtectedRoute />}>
@@ -133,6 +142,7 @@ export default function App() {
                       path="/subscription"
                       element={<SubscriptionPage />}
                     />
+                    <Route path="/account" element={<AccountPage />} />
                   </Route>
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />

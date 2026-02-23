@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
@@ -35,6 +35,10 @@ const STATUS_CONFIG: Record<string, { style: string; label: string; dot: string 
   past_due: { style: 'text-red-400', label: 'Past Due', dot: 'bg-red-400' },
   canceled: { style: 'text-zinc-500', label: 'Canceled', dot: 'bg-zinc-500' },
   trialing: { style: 'text-blue-400', label: 'Trial', dot: 'bg-blue-400' },
+  incomplete: { style: 'text-amber-400', label: 'Incomplete', dot: 'bg-amber-400' },
+  incomplete_expired: { style: 'text-red-400', label: 'Expired', dot: 'bg-red-400' },
+  unpaid: { style: 'text-red-400', label: 'Unpaid', dot: 'bg-red-400' },
+  paused: { style: 'text-zinc-400', label: 'Paused', dot: 'bg-zinc-400' },
 };
 
 const TIER_GRADIENTS: Record<Tier, string> = {
@@ -49,43 +53,70 @@ export function SubscriptionPage() {
   const location = useLocation();
   const queryClient = useQueryClient();
   const reducedMotion = useReducedMotion();
+  const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'checkout_done' | 'portal_done'>('idle');
 
-  // After Stripe Checkout redirect: refresh JWT to pick up new tier, then refetch subscription
+  // After Stripe Checkout redirect: poll with exponential backoff until webhook processes
   useEffect(() => {
     if (!new URLSearchParams(location.search).get('session_id')) return;
-    // Clean up the query param so a page refresh won't re-trigger
     window.history.replaceState({}, '', location.pathname);
+    setSyncState('syncing');
 
-    void refreshSession().then(() => {
-      void queryClient.invalidateQueries({ queryKey: ['subscription'] });
-    });
+    let cancelled = false;
+    const delays = [0, 2000, 4000, 8000];
 
-    // Delayed second refresh: webhook may not have updated Cognito group yet.
-    // Retry after 4s to pick up the correct tier in the JWT.
-    const timer = setTimeout(() => {
-      void refreshSession().then(() => {
-        void queryClient.invalidateQueries({ queryKey: ['subscription'] });
-      });
-    }, 4000);
-    return () => clearTimeout(timer);
+    (async () => {
+      for (const delay of delays) {
+        if (cancelled) return;
+        if (delay > 0) await new Promise<void>((r) => setTimeout(r, delay));
+        if (cancelled) return;
+        await refreshSession();
+        if (cancelled) return;
+        await queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      }
+      if (!cancelled) {
+        setSyncState('checkout_done');
+        setTimeout(() => { if (!cancelled) setSyncState('idle'); }, 6000);
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [location.search, location.pathname, queryClient]);
 
-  // After Stripe Customer Portal return: refresh JWT to pick up tier changes
+  // After Stripe Customer Portal return: poll with exponential backoff for tier changes.
+  // NOTE: sessionStorage removal is deferred until polling completes so that
+  // React StrictMode's double-mount cycle can restart the polling on remount.
   useEffect(() => {
-    if (sessionStorage.getItem('portal_pending') !== 'true') return;
-    sessionStorage.removeItem('portal_pending');
+    const portalTs = sessionStorage.getItem('portal_pending');
+    if (!portalTs) return;
 
-    void refreshSession().then(() => {
-      void queryClient.invalidateQueries({ queryKey: ['subscription'] });
-    });
+    // Ignore stale flags older than 5 minutes
+    const ts = parseInt(portalTs, 10);
+    if (isNaN(ts) || Date.now() - ts > 5 * 60 * 1000) {
+      sessionStorage.removeItem('portal_pending');
+      return;
+    }
 
-    // Delayed retry for webhook processing (same pattern as post-checkout)
-    const timer = setTimeout(() => {
-      void refreshSession().then(() => {
-        void queryClient.invalidateQueries({ queryKey: ['subscription'] });
-      });
-    }, 4000);
-    return () => clearTimeout(timer);
+    setSyncState('syncing');
+    let cancelled = false;
+    const delays = [0, 2000, 4000, 8000];
+
+    (async () => {
+      for (const delay of delays) {
+        if (cancelled) return;
+        if (delay > 0) await new Promise<void>((r) => setTimeout(r, delay));
+        if (cancelled) return;
+        await refreshSession();
+        if (cancelled) return;
+        await queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      }
+      if (!cancelled) {
+        sessionStorage.removeItem('portal_pending');
+        setSyncState('portal_done');
+        setTimeout(() => { if (!cancelled) setSyncState('idle'); }, 6000);
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [queryClient]);
 
   const {
@@ -104,7 +135,7 @@ export function SubscriptionPage() {
     mutationFn: () => getCustomerPortalUrl(),
     // Gotcha #7: same tab redirect, NOT window.open()
     onSuccess: ({ portal_url }) => {
-      sessionStorage.setItem('portal_pending', 'true');
+      sessionStorage.setItem('portal_pending', String(Date.now()));
       window.location.href = portal_url;
     },
   });
@@ -171,6 +202,35 @@ export function SubscriptionPage() {
             )}
           </div>
         </motion.div>
+
+        {/* ── Sync Status Banner ── */}
+        {syncState !== 'idle' && (
+          <div
+            role="status"
+            className={`mt-6 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm ${
+              syncState === 'syncing'
+                ? 'border-blue-800 bg-blue-900/30 text-blue-300'
+                : 'border-green-800 bg-green-900/30 text-green-300'
+            }`}
+          >
+            {syncState === 'syncing' ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 motion-safe:animate-spin" />
+                Updating your subscription...
+              </>
+            ) : syncState === 'checkout_done' ? (
+              <>
+                <Check className="h-4 w-4 shrink-0" />
+                Payment successful! Your plan has been updated.
+              </>
+            ) : (
+              <>
+                <Check className="h-4 w-4 shrink-0" />
+                Your subscription has been updated.
+              </>
+            )}
+          </div>
+        )}
 
         {/* Accent divider */}
         <div className="my-8 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />

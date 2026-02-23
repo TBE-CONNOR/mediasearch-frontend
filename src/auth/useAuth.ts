@@ -4,6 +4,7 @@ import { cognitoClient } from '@/auth/CognitoClient';
 import { useAuthStore } from '@/store/authStore';
 import { cleanupUploads } from '@/hooks/useUploadQueue';
 import { useSearchStore } from '@/store/searchStore';
+import { deleteAccount as deleteAccountApi } from '@/api/account';
 
 async function withAuthState<T>(fn: () => Promise<T>): Promise<T> {
   const { setAuthLoading, setAuthError } = useAuthStore.getState();
@@ -61,6 +62,36 @@ export function useAuth() {
     [],
   );
 
+  const changePassword = useCallback(
+    (oldPassword: string, newPassword: string) =>
+      withAuthState(() => cognitoClient.changePassword(oldPassword, newPassword)),
+    [],
+  );
+
+  const forgotPassword = useCallback(
+    (email: string) =>
+      withAuthState(() => cognitoClient.forgotPassword(email)),
+    [],
+  );
+
+  const confirmForgotPassword = useCallback(
+    (email: string, code: string, newPassword: string) =>
+      withAuthState(() =>
+        cognitoClient.confirmForgotPassword(email, code, newPassword),
+      ),
+    [],
+  );
+
+  const deleteAccount = useCallback(async () => {
+    await deleteAccountApi();
+    cleanupUploads();
+    useSearchStore.getState().clear();
+    cognitoClient.signOut();
+    useAuthStore.getState().logout();
+    queryClient.clear();
+    window.location.href = '/';
+  }, [queryClient]);
+
   const signOut = useCallback(() => {
     // Check for OAuth logout URL BEFORE signOut clears the flag
     const oauthLogoutUrl = cognitoClient.getOAuthLogoutUrl();
@@ -78,5 +109,17 @@ export function useAuth() {
     window.location.href = oauthLogoutUrl ?? '/';
   }, [queryClient]);
 
-  return { signIn, signUp, confirmSignUp, resendCode, signOut, loading, error };
+  return {
+    signIn,
+    signUp,
+    confirmSignUp,
+    resendCode,
+    changePassword,
+    forgotPassword,
+    confirmForgotPassword,
+    deleteAccount,
+    signOut,
+    loading,
+    error,
+  };
 }

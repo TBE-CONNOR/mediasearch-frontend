@@ -139,3 +139,15 @@ export const TIERS: readonly PricingTier[] = [
     decoy: false,
   },
 ];
+
+// Fail production builds if any paid tier is missing Stripe price IDs.
+// Catches misconfigured .env before deploy rather than at runtime.
+if (import.meta.env.PROD) {
+  for (const tier of TIERS) {
+    if (tier.monthlyPrice !== null && (!tier.monthlyPriceId || !tier.annualPriceId)) {
+      throw new Error(
+        `[pricing] Missing Stripe price ID for "${tier.id}" tier. Check VITE_STRIPE_PRICE_* env vars.`,
+      );
+    }
+  }
+}

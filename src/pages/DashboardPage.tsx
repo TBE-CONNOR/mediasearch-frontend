@@ -239,7 +239,7 @@ export function DashboardPage() {
               <span className="text-base text-zinc-500">
                 {formatAmount(sub.amount, sub.currency)}/{sub.interval}
                 {' · '}
-                {sub.cancel_at_period_end ? 'Cancels' : 'Renews'}{' '}
+                {sub.cancel_at_period_end ? 'Access until' : 'Renews'}{' '}
                 {formatPeriodEnd(sub.current_period_end)}
               </span>
             )}

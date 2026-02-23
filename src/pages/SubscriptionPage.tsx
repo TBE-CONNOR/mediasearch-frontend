@@ -292,7 +292,7 @@ function PaidPlanDetails({
     },
     {
       icon: Calendar,
-      label: sub.cancel_at_period_end ? 'Cancels on' : 'Renews on',
+      label: sub.cancel_at_period_end ? 'Access until' : 'Renews on',
       value: periodDate,
       valueClass: sub.cancel_at_period_end ? 'text-amber-400' : 'text-white',
     },

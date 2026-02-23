@@ -54,9 +54,12 @@ const validTierSet = new Set<string>(VALID_TIERS);
 
 function extractTierFromPayload(payload: Record<string, unknown>): Tier {
   // Gotcha #6: for free users cognito:groups is ABSENT entirely
+  // Gotcha: Google OAuth users have groups like ['us-east-1_xxx_Google', 'pro']
+  // where the identity provider group comes first. Scan ALL groups for valid tier.
   const groups = payload['cognito:groups'] as string[] | undefined;
-  const rawTier = groups?.[0] ?? 'free';
-  return validTierSet.has(rawTier) ? (rawTier as Tier) : 'free';
+  if (!groups || groups.length === 0) return 'free';
+  const tier = groups.find((g) => validTierSet.has(g));
+  return tier ? (tier as Tier) : 'free';
 }
 
 function extractFromSession(session: CognitoUserSession) {

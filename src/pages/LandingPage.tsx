@@ -2,6 +2,7 @@ import { Navigate } from 'react-router';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useAuthStore } from '@/store/authStore';
 import { TIERS } from '@/config/pricing';
 import { HeroSection } from '@/components/ui/hero-section';
@@ -17,6 +18,7 @@ export function LandingPage() {
   const idToken = useAuthStore((s) => s.idToken);
   const authReady = useAuthStore((s) => s.authReady);
   const reducedMotion = useReducedMotion();
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   if (!authReady) return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -47,8 +49,8 @@ export function LandingPage() {
       {/* ── Scroll Demo ── */}
       <section className="bg-background pt-20 md:pt-12">
         <motion.div
-          initial={reducedMotion ? false : { opacity: 0, x: 100 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={reducedMotion ? false : { opacity: 0, ...(isMobile ? { y: 40 } : { x: 100 }) }}
+          whileInView={{ opacity: 1, x: 0, y: 0 }}
           viewport={{ once: false, amount: 0.1 }}
           transition={{ duration: reducedMotion ? 0 : 0.7, ease: 'easeOut' }}
         >
@@ -75,7 +77,7 @@ export function LandingPage() {
                 loop
                 muted
                 playsInline
-                className="mx-auto h-full w-full rounded-2xl object-cover object-left-top"
+                className="mx-auto h-full w-full rounded-2xl object-cover object-center md:object-left-top"
               />
             </div>
           </ContainerScroll>

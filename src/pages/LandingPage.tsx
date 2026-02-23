@@ -69,21 +69,14 @@ export function LandingPage() {
             }
           >
             <div className="relative h-full w-full">
-              <img
-                src="/hero-dashboard.jpg"
-                alt="MediaSearch dashboard mockup"
-                loading="lazy"
+              <video
+                src="/hero-demo.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
                 className="mx-auto h-full w-full rounded-2xl object-cover object-left-top"
-                draggable={false}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
               />
-              <div className="absolute inset-0 flex items-end justify-center rounded-2xl bg-gradient-to-t from-black/70 to-transparent p-8">
-                <p className="text-2xl font-semibold text-white md:text-3xl">
-                  Semantic search across all your media
-                </p>
-              </div>
             </div>
           </ContainerScroll>
         </motion.div>

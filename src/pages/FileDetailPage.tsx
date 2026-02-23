@@ -19,11 +19,10 @@ export function FileDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // Date.now() in useRef initializer violates react-hooks/purity — use effect instead.
+  // Safe: the query's refetchInterval isn't evaluated until after the first response.
   const mountTime = useRef(0);
-
-  useEffect(() => {
-    mountTime.current = Date.now();
-  }, []);
+  useEffect(() => { mountTime.current = Date.now(); }, []);
 
   const {
     data: file,
@@ -55,7 +54,7 @@ export function FileDetailPage() {
     onSuccess: ({ download_url }) => {
       const a = document.createElement('a');
       a.href = download_url;
-      a.download = '';
+      a.download = file?.file_name ?? '';
       a.rel = 'noopener';
       document.body.appendChild(a);
       a.click();

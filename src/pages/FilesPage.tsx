@@ -1,15 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { Loader2, FileText, Upload, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
-import { FileThumbnail } from '@/components/FileThumbnail';
+import { FileCard } from '@/components/FileCard';
 import { listFiles } from '@/api/files';
-import type { FileItem, ProcessingStatus } from '@/api/files';
+import type { ProcessingStatus } from '@/types/domain';
 import { QuotaErrorBanner } from '@/components/QuotaError';
 import { is429 } from '@/utils/httpUtils';
-import { formatDate, isTerminalStatus, isPreviewable } from '@/utils/fileUtils';
+import { formatDate, isTerminalStatus } from '@/utils/fileUtils';
 import { getStatusInfo } from '@/utils/statusConfig';
-import { MediaPreviewModal } from '@/components/MediaPreviewModal';
 import { FILES_REFETCH_INTERVAL_MS } from '@/config/constants';
 
 export function FilesPage() {
@@ -87,64 +85,28 @@ export function FilesPage() {
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {files.map((file) => (
-                <FileCard key={file.file_id} file={file} />
+                <FileCard key={file.file_id} file={file}>
+                  <Link
+                    to={`/files/${file.file_id}`}
+                    className="block p-4 transition-colors hover:bg-zinc-800/50"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-base font-medium text-white">
+                        {file.file_name}
+                      </p>
+                      <StatusBadge status={file.processing_status} />
+                    </div>
+                    <p className="mt-1 text-sm text-zinc-500">
+                      {formatDate(file.upload_date)}
+                    </p>
+                  </Link>
+                </FileCard>
               ))}
             </div>
           </>
         )}
       </div>
     </div>
-  );
-}
-
-function FileCard({ file }: { file: FileItem }) {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const canPreview = isPreviewable(file);
-
-  return (
-    <>
-      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700">
-        {canPreview ? (
-          <button
-            type="button"
-            onClick={() => setPreviewOpen(true)}
-            className="block w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-inset"
-            aria-label={`Preview ${file.file_name}`}
-          >
-            <FileThumbnail file={file} />
-          </button>
-        ) : (
-          <Link to={`/files/${file.file_id}`} aria-label={`View ${file.file_name} details`}>
-            <FileThumbnail file={file} />
-          </Link>
-        )}
-
-        <Link
-          to={`/files/${file.file_id}`}
-          className="block p-4 transition-colors hover:bg-zinc-800/50"
-        >
-          <div className="flex items-center justify-between gap-2">
-            <p className="truncate text-base font-medium text-white">
-              {file.file_name}
-            </p>
-            <StatusBadge status={file.processing_status} />
-          </div>
-          <p className="mt-1 text-sm text-zinc-500">
-            {formatDate(file.upload_date)}
-          </p>
-        </Link>
-      </div>
-
-      {canPreview && (
-        <MediaPreviewModal
-          open={previewOpen}
-          onClose={() => setPreviewOpen(false)}
-          contentType={file.content_type}
-          mediaUrl={file.presigned_url}
-          fileName={file.file_name}
-        />
-      )}
-    </>
   );
 }
 

@@ -23,7 +23,9 @@ export function VideoThumbnail({
   const handleLoadedData = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    video.currentTime = Math.min(0.5, video.duration * 0.1);
+    const dur = video.duration;
+    if (!Number.isFinite(dur) || dur <= 0) return;
+    video.currentTime = Math.min(0.5, dur * 0.1);
   }, []);
 
   if (failed) {

@@ -39,8 +39,8 @@ export class ErrorBoundary extends Component<Props, State> {
       this.state.hasError &&
       this.props.resetKeys &&
       prevProps.resetKeys &&
-      this.props.resetKeys.length === prevProps.resetKeys.length &&
-      this.props.resetKeys.some((key, i) => key !== prevProps.resetKeys![i])
+      (this.props.resetKeys.length !== prevProps.resetKeys.length ||
+        this.props.resetKeys.some((key, i) => key !== prevProps.resetKeys![i]))
     ) {
       this.setState({ hasError: false, error: null });
     }

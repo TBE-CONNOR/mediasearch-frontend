@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, Navigate } from 'react-router';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/auth/useAuth';
@@ -18,8 +18,11 @@ export function ConfirmEmailPage() {
   const idToken = useAuthStore((s) => s.idToken);
   const authReady = useAuthStore((s) => s.authReady);
 
+  const codeRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     useAuthStore.getState().setAuthError(null);
+    codeRef.current?.focus();
   }, []);
 
   if (!authReady) {
@@ -39,7 +42,7 @@ export function ConfirmEmailPage() {
     void (async () => {
       try {
         await confirmSignUp(email, code);
-        await navigate('/sign-in', { replace: true });
+        void navigate('/sign-in', { replace: true });
       } catch {
         // error state set by hook
       }
@@ -82,6 +85,7 @@ export function ConfirmEmailPage() {
                 Verification Code
               </label>
               <input
+                ref={codeRef}
                 id="confirm-code"
                 type="text"
                 inputMode="numeric"
@@ -128,9 +132,7 @@ export function ConfirmEmailPage() {
             >
               Didn&apos;t receive a code? Resend
             </button>
-            {resendMsg && (
-              <p role="status" className="text-sm text-green-400">{resendMsg}</p>
-            )}
+            <p role="status" aria-live="polite" className="text-sm text-green-400">{resendMsg}</p>
             <p className="text-zinc-400">
               <Link to="/sign-in" className="text-blue-400 hover:underline">
                 Back to Sign In

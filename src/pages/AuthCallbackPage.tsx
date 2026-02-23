@@ -31,7 +31,7 @@ export function AuthCallbackPage() {
           sub: result.sub,
           tier: result.tier,
         });
-        await navigate('/dashboard', { replace: true });
+        void navigate('/dashboard', { replace: true });
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Authentication failed';

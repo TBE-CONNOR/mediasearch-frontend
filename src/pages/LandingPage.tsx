@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { Navigate } from 'react-router';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -17,21 +16,14 @@ import { FEATURES, HOW_IT_WORKS, TESTIMONIALS } from '@/components/landing/data'
 export function LandingPage() {
   const idToken = useAuthStore((s) => s.idToken);
   const authReady = useAuthStore((s) => s.authReady);
-  const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (authReady && idToken) {
-      void navigate('/dashboard', { replace: true });
-    }
-  }, [authReady, idToken, navigate]);
 
   if (!authReady) return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
     </div>
   );
-  if (idToken) return null;
+  if (idToken) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-white">
@@ -78,11 +70,14 @@ export function LandingPage() {
           >
             <div className="relative h-full w-full">
               <img
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=80"
+                src="/hero-dashboard.jpg"
                 alt="MediaSearch dashboard mockup"
                 loading="lazy"
                 className="mx-auto h-full w-full rounded-2xl object-cover object-left-top"
                 draggable={false}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
               />
               <div className="absolute inset-0 flex items-end justify-center rounded-2xl bg-gradient-to-t from-black/70 to-transparent p-8">
                 <p className="text-2xl font-semibold text-white md:text-3xl">

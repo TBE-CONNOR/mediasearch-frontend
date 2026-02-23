@@ -45,7 +45,7 @@ export function SearchResults({
           role="tab"
           id="tab-gallery"
           aria-selected={viewMode === 'gallery'}
-          aria-controls={viewMode === 'gallery' ? 'tabpanel-gallery' : undefined}
+          aria-controls="tabpanel-gallery"
           tabIndex={viewMode === 'gallery' ? 0 : -1}
           onClick={() => onChangeViewMode('gallery')}
           className={`px-5 py-2.5 text-base font-medium transition-colors ${
@@ -62,7 +62,7 @@ export function SearchResults({
           role="tab"
           id="tab-analysis"
           aria-selected={viewMode === 'analysis'}
-          aria-controls={viewMode === 'analysis' ? 'tabpanel-analysis' : undefined}
+          aria-controls="tabpanel-analysis"
           tabIndex={viewMode === 'analysis' ? 0 : -1}
           onClick={() => onChangeViewMode('analysis')}
           className={`px-5 py-2.5 text-base font-medium transition-colors ${
@@ -75,29 +75,28 @@ export function SearchResults({
         </button>
       </div>
 
-      {viewMode === 'gallery' ? (
-        <div
-          role="tabpanel"
-          id="tabpanel-gallery"
-          aria-labelledby="tab-gallery"
-          tabIndex={0}
-        >
-          <MediaGalleryView citations={data.citations} />
-        </div>
-      ) : (
-        <div
-          role="tabpanel"
-          id="tabpanel-analysis"
-          aria-labelledby="tab-analysis"
-          tabIndex={0}
-        >
-          <AIAnalysisView
-            data={data}
-            answerOpen={answerOpen}
-            onToggleAnswer={onToggleAnswer}
-          />
-        </div>
-      )}
+      <div
+        role="tabpanel"
+        id="tabpanel-gallery"
+        aria-labelledby="tab-gallery"
+        tabIndex={0}
+        hidden={viewMode !== 'gallery'}
+      >
+        <MediaGalleryView citations={data.citations} />
+      </div>
+      <div
+        role="tabpanel"
+        id="tabpanel-analysis"
+        aria-labelledby="tab-analysis"
+        tabIndex={0}
+        hidden={viewMode !== 'analysis'}
+      >
+        <AIAnalysisView
+          data={data}
+          answerOpen={answerOpen}
+          onToggleAnswer={onToggleAnswer}
+        />
+      </div>
     </div>
   );
 }

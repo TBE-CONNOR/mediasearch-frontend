@@ -1,18 +1,22 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Search, Loader2 } from 'lucide-react';
 import { listFiles } from '@/api/files';
-import { searchFiles } from '@/api/search';
+import { searchFiles, getSearchQuota } from '@/api/search';
 import { QuotaErrorBanner } from '@/components/QuotaError';
 import { FileFilter } from '@/components/search/FileFilter';
 import { SearchResults } from '@/components/search/SearchResults';
 import { is429 } from '@/utils/httpUtils';
 import { isTerminalStatus } from '@/utils/fileUtils';
+import { useAuthStore } from '@/store/authStore';
 import { useSearchStore } from '@/store/searchStore';
 import { useUploadStore } from '@/store/uploadStore';
 import { FILES_REFETCH_INTERVAL_MS } from '@/config/constants';
 
 export function SearchPage() {
+  const tier = useAuthStore((s) => s.tier);
+  const queryClient = useQueryClient();
+
   const savedQuery = useSearchStore((s) => s.query);
   const savedFileIds = useSearchStore((s) => s.selectedFileIds);
   const setStoreQuery = useSearchStore((s) => s.setQuery);
@@ -56,16 +60,24 @@ export function SearchPage() {
         },
   });
 
+  const { data: searchQuota } = useQuery({
+    queryKey: ['search-quota'],
+    queryFn: getSearchQuota,
+    enabled: (tier ?? 'free') === 'free',
+  });
+
   const searchMut = useMutation({
     mutationFn: (params: { query: string; fileIds?: string[] }) =>
       searchFiles(params.query, {
         fileIds: params.fileIds,
         cachedFiles: files,
       }),
-    onSuccess: (data) => {
-      setStoreQuery(query);
-      setStoreFileIds(selectedFileIds);
+    onSuccess: (data, variables) => {
+      setStoreQuery(variables.query);
+      setStoreFileIds(variables.fileIds ?? []);
       setStoreLastResult(data);
+      // Refresh search quota counter after each search
+      void queryClient.invalidateQueries({ queryKey: ['search-quota'] });
     },
   });
 
@@ -137,6 +149,12 @@ export function SearchPage() {
             Search
           </button>
         </form>
+
+        {tier === 'free' && searchQuota && !searchQuota.unlimited && (
+          <p className="mt-2 text-sm text-zinc-500">
+            {searchQuota.searches_used} of {searchQuota.searches_limit} searches used this month
+          </p>
+        )}
 
         {/* File filter */}
         {completedFiles.length > 0 && (

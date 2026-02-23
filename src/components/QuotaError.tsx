@@ -4,7 +4,13 @@ import type { ApiError } from '@/api/files';
 
 function parseApiError(error: unknown): ApiError | null {
   const raw: unknown = isAxiosError(error) ? error.response?.data : null;
-  if (raw && typeof raw === 'object' && !Array.isArray(raw) && 'error' in raw) {
+  if (
+    raw &&
+    typeof raw === 'object' &&
+    !Array.isArray(raw) &&
+    'error' in raw &&
+    typeof (raw as Record<string, unknown>).error === 'string'
+  ) {
     return raw as ApiError;
   }
   return null;

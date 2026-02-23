@@ -13,6 +13,7 @@ export {
   formatDateTime,
   formatAmount,
   formatPeriodEnd,
+  sanitizeFileName,
   getFileIcon,
   getModalityIcon,
   isPreviewable,

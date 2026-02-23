@@ -150,7 +150,7 @@ function TierCard({
   tier: PricingTier;
   index: number;
   annual: boolean;
-  currentTier: string | null;
+  currentTier: Tier | null;
   reducedMotion: boolean;
 }) {
   const isCurrentPlan = currentTier === t.id;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'motion/react';
@@ -14,19 +14,20 @@ import {
   Music,
   FileText,
   RefreshCw,
+  Info,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useSearchStore } from '@/store/searchStore';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSyncSubscriptionTier } from '@/hooks/useSyncSubscriptionTier';
 import { getSubscription } from '@/api/subscription';
+import { getSearchQuota } from '@/api/search';
 import { listFiles } from '@/api/files';
-import type { FileItem } from '@/api/files';
-import { FileThumbnail } from '@/components/FileThumbnail';
-import { MediaPreviewModal } from '@/components/MediaPreviewModal';
-import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
+import { FileCard } from '@/components/FileCard';
+import { TIER_LABELS, TIER_COLORS, QUOTA_WARNING_THRESHOLD } from '@/config/constants';
 import { TIER_LIMITS, type ModalityPrefix } from '@/config/pricing';
 import { cn } from '@/lib/utils';
-import { formatAmount, formatPeriodEnd, formatDate, isPreviewable } from '@/utils/fileUtils';
+import { formatAmount, formatPeriodEnd, formatDate } from '@/utils/fileUtils';
 import type { LucideIcon } from 'lucide-react';
 
 const QUICK_ACTIONS: {
@@ -86,6 +87,7 @@ export function DashboardPage() {
 
   const {
     data: files,
+    isPending: filesPending,
     error: filesError,
     refetch: refetchFiles,
   } = useQuery({
@@ -93,15 +95,13 @@ export function DashboardPage() {
     queryFn: () => listFiles(),
   });
 
-  // Sync subscription tier to authStore so NavBar badge and library limits
-  // reflect the real tier even if the JWT hasn't caught up yet.
-  useEffect(() => {
-    if (!subData?.tier) return;
-    const storeTier = useAuthStore.getState().tier;
-    if (subData.tier !== storeTier) {
-      useAuthStore.getState().setTier(subData.tier);
-    }
-  }, [subData?.tier]);
+  const { data: searchQuota } = useQuery({
+    queryKey: ['search-quota'],
+    queryFn: getSearchQuota,
+    enabled: (tier ?? 'free') === 'free',
+  });
+
+  useSyncSubscriptionTier(subData?.tier);
 
   const currentTier = subData?.tier ?? tier ?? 'free';
   const sub = subData?.subscription;
@@ -111,12 +111,14 @@ export function DashboardPage() {
     const tierLimits = TIER_LIMITS[currentTier];
 
     // Filter files to match the backend's actual quota counter.
-    // Free tier uses quota#lifetime (count all files).
-    // Paid tiers use quota#YYYY-MM (count only files charged to this month's quota).
+    // Free tier: only count files with quota#lifetime key.
+    // Paid tiers: only count files charged to this month's quota.
     let relevantFiles = files;
-    if (tierLimits.period === 'month') {
+    if (tierLimits.period === 'lifetime') {
+      relevantFiles = files.filter((f) => f.quota_key === 'quota#lifetime');
+    } else {
       const now = new Date();
-      const currentQuotaKey = `quota#${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const currentQuotaKey = `quota#${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
       relevantFiles = files.filter((f) => f.quota_key === currentQuotaKey);
     }
 
@@ -129,6 +131,11 @@ export function DashboardPage() {
     return counts;
   }, [files, currentTier]);
 
+  const grandfatheredCount = useMemo(() => {
+    if (!files || currentTier !== 'free') return 0;
+    return files.filter((f) => f.quota_key !== 'quota#lifetime').length;
+  }, [files, currentTier]);
+
   const recentFiles = useMemo(() => {
     if (!files || files.length === 0) return [];
     return [...files]
@@ -137,7 +144,7 @@ export function DashboardPage() {
           new Date(b.upload_date).getTime() -
           new Date(a.upload_date).getTime(),
       )
-      .slice(0, 8);
+      .slice(0, 4);
   }, [files]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -283,13 +290,13 @@ export function DashboardPage() {
             }}
           >
             <h2 className="text-xl font-semibold text-white">Your library</h2>
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 xl:grid-cols-5">
               {STAT_CARDS.map((card) => {
                 const count = fileCounts[card.prefix];
                 const tierLimits = TIER_LIMITS[currentTier];
                 const limit = tierLimits.limits[card.prefix];
                 const ratio = limit > 0 ? count / limit : 0;
-                const isNearLimit = ratio >= 0.8;
+                const isNearLimit = ratio >= QUOTA_WARNING_THRESHOLD;
                 const isAtLimit = ratio >= 1;
 
                 return (
@@ -333,8 +340,76 @@ export function DashboardPage() {
                   </div>
                 );
               })}
+
+              {currentTier === 'free' && searchQuota && !searchQuota.unlimited && (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
+                  <div className="flex items-center justify-between">
+                    <Search className="h-6 w-6 text-zinc-500" />
+                    <span className="text-xs text-zinc-600">/ mo</span>
+                  </div>
+                  <p className="mt-3 text-2xl font-bold text-white">
+                    {searchQuota.searches_used}
+                    <span className="text-lg font-normal text-zinc-500">
+                      {' '}/ {searchQuota.searches_limit}
+                    </span>
+                  </p>
+                  <p className="text-base text-zinc-400">Searches</p>
+                  <div
+                    className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800"
+                    role="progressbar"
+                    aria-valuenow={searchQuota.searches_used}
+                    aria-valuemin={0}
+                    aria-valuemax={searchQuota.searches_limit}
+                    aria-label="Searches"
+                  >
+                    <div
+                      className={cn(
+                        'h-full rounded-full transition-all',
+                        searchQuota.searches_used >= searchQuota.searches_limit
+                          ? 'bg-red-500'
+                          : searchQuota.searches_used >= searchQuota.searches_limit * QUOTA_WARNING_THRESHOLD
+                            ? 'bg-amber-500'
+                            : 'bg-blue-500',
+                      )}
+                      style={{
+                        width: `${Math.min((searchQuota.searches_used / searchQuota.searches_limit) * 100, 100)}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {currentTier !== 'free' && (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
+                  <div className="flex items-center justify-between">
+                    <Search className="h-6 w-6 text-zinc-500" />
+                    <span className="text-xs text-zinc-600">/ mo</span>
+                  </div>
+                  <p className="mt-3 text-2xl font-bold text-white">
+                    Unlimited
+                  </p>
+                  <p className="text-base text-zinc-400">Searches</p>
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div className="h-full w-full rounded-full bg-blue-500" />
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
+        )}
+
+        {grandfatheredCount > 0 && (
+          <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-800/50 bg-blue-900/20 p-4">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
+            <div>
+              <p className="text-sm font-medium text-blue-300">
+                You also have {grandfatheredCount} {grandfatheredCount === 1 ? 'file' : 'files'} from a previous plan.
+              </p>
+              <p className="mt-0.5 text-sm text-blue-400/70">
+                These files are still stored and searchable. They don&apos;t count against your free limits.
+              </p>
+            </div>
+          </div>
         )}
 
         {/* ── Recent files ── */}
@@ -360,10 +435,26 @@ export function DashboardPage() {
             )}
           </div>
 
-          {recentFiles.length > 0 ? (
+          {filesPending ? (
+            <div className="mt-4 flex items-center justify-center py-12" role="status" aria-label="Loading recent files">
+              <Loader2 className="h-6 w-6 motion-safe:animate-spin text-blue-500" />
+            </div>
+          ) : recentFiles.length > 0 ? (
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {recentFiles.map((file) => (
-                <RecentFileCard key={file.file_id} file={file} />
+                <FileCard key={file.file_id} file={file}>
+                  <Link
+                    to={`/files/${file.file_id}`}
+                    className="block p-3 transition-colors hover:bg-zinc-800/50"
+                  >
+                    <p className="truncate text-base font-medium text-white">
+                      {file.file_name}
+                    </p>
+                    <p className="mt-0.5 text-sm text-zinc-500">
+                      {formatDate(file.upload_date)}
+                    </p>
+                  </Link>
+                </FileCard>
               ))}
             </div>
           ) : (
@@ -424,52 +515,4 @@ export function DashboardPage() {
   );
 }
 
-/* ── Recent file card (thumbnail + name) ── */
-function RecentFileCard({ file }: { file: FileItem }) {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const canPreview = isPreviewable(file);
-
-  return (
-    <>
-      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700">
-        {canPreview ? (
-          <button
-            type="button"
-            onClick={() => setPreviewOpen(true)}
-            className="block w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-inset"
-            aria-label={`Preview ${file.file_name}`}
-          >
-            <FileThumbnail file={file} />
-          </button>
-        ) : (
-          <Link to={`/files/${file.file_id}`} aria-label={`View ${file.file_name} details`}>
-            <FileThumbnail file={file} />
-          </Link>
-        )}
-
-        <Link
-          to={`/files/${file.file_id}`}
-          className="block p-3 transition-colors hover:bg-zinc-800/50"
-        >
-          <p className="truncate text-base font-medium text-white">
-            {file.file_name}
-          </p>
-          <p className="mt-0.5 text-sm text-zinc-500">
-            {formatDate(file.upload_date)}
-          </p>
-        </Link>
-      </div>
-
-      {canPreview && (
-        <MediaPreviewModal
-          open={previewOpen}
-          onClose={() => setPreviewOpen(false)}
-          contentType={file.content_type}
-          mediaUrl={file.presigned_url}
-          fileName={file.file_name}
-        />
-      )}
-    </>
-  );
-}
 

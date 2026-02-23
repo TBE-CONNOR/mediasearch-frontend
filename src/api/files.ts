@@ -1,8 +1,6 @@
 import { api } from '@/api/axios';
 import type { ProcessingStatus } from '@/types/domain';
 
-export type { ProcessingStatus };
-
 export interface ApiError {
   error: string;
   detail?: string;
@@ -47,7 +45,7 @@ interface FilesPageResponse {
   next_token: string | null;
 }
 
-interface DownloadResponse {
+export interface DownloadResponse {
   download_url: string;
   expires_in: number;
   file_id: string;
@@ -55,7 +53,7 @@ interface DownloadResponse {
   processing_status: ProcessingStatus;
 }
 
-interface DeleteResponse {
+export interface DeleteResponse {
   message: string;
   file_id: string;
   file_name: string;

@@ -28,6 +28,9 @@ export const POLLING_MEDIUM_UNTIL_MS = 5 * 60_000;
 export const POLLING_SLOW_MS = 15_000; // 5 – 15 min
 export const MEDIA_DURATION_TIMEOUT_MS = 10_000;
 
+// ─── Quota thresholds ────────────────────────────────────
+export const QUOTA_WARNING_THRESHOLD = 0.8;
+
 // ─── Search ───────────────────────────────────────────────
 export const LOW_CONFIDENCE_TOKEN_THRESHOLD = 20;
 

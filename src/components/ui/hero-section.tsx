@@ -19,7 +19,7 @@ interface HeroSectionProps {
 }
 
 /* ── Click ripple ── */
-function useClickRipple(containerRef: React.RefObject<HTMLDivElement | null>) {
+function useClickRipple(containerRef: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
   const [ripples, setRipples] = useState<
     { id: number; x: number; y: number }[]
   >([]);
@@ -44,6 +44,7 @@ function useClickRipple(containerRef: React.RefObject<HTMLDivElement | null>) {
   );
 
   useEffect(() => {
+    if (!enabled) return;
     const el = containerRef.current;
     if (!el) return;
     el.addEventListener('click', handleClick);
@@ -52,7 +53,7 @@ function useClickRipple(containerRef: React.RefObject<HTMLDivElement | null>) {
       timeoutsRef.current.forEach((t) => clearTimeout(t));
       timeoutsRef.current = [];
     };
-  }, [containerRef, handleClick]);
+  }, [containerRef, handleClick, enabled]);
 
   return ripples;
 }
@@ -72,7 +73,7 @@ export function HeroSection({
 }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const ripples = useClickRipple(containerRef);
+  const ripples = useClickRipple(containerRef, !reducedMotion);
 
   /* Mouse-follow radial gradient */
   const mouseX = useMotionValue(0.5);
@@ -105,6 +106,7 @@ export function HeroSection({
       {/* Mouse-follow gradient */}
       {!reducedMotion && (
         <motion.div
+          aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-[1]"
           style={
             {
@@ -199,22 +201,38 @@ export function HeroSection({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.7, delay: reducedMotion ? 0 : 0.7 }}
           >
-            {primaryCta && (
-              <Link
-                to={primaryCta.href}
-                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                {primaryCta.label}
-              </Link>
-            )}
-            {secondaryCta && (
-              <Link
-                to={secondaryCta.href}
-                className="inline-flex items-center justify-center rounded-full border border-zinc-700 px-8 py-3 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                {secondaryCta.label}
-              </Link>
-            )}
+            {primaryCta &&
+              (primaryCta.href.startsWith('#') ? (
+                <a
+                  href={primaryCta.href}
+                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {primaryCta.label}
+                </a>
+              ) : (
+                <Link
+                  to={primaryCta.href}
+                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {primaryCta.label}
+                </Link>
+              ))}
+            {secondaryCta &&
+              (secondaryCta.href.startsWith('#') ? (
+                <a
+                  href={secondaryCta.href}
+                  className="inline-flex items-center justify-center rounded-full border border-zinc-700 px-8 py-3 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {secondaryCta.label}
+                </a>
+              ) : (
+                <Link
+                  to={secondaryCta.href}
+                  className="inline-flex items-center justify-center rounded-full border border-zinc-700 px-8 py-3 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {secondaryCta.label}
+                </Link>
+              ))}
           </motion.div>
         </div>
       </section>

@@ -17,6 +17,14 @@ interface AuthState {
     refreshToken?: string;
   }) => void;
   setUser: (user: { email: string; sub: string; tier: Tier }) => void;
+  setSession: (session: {
+    idToken: string;
+    expiresAt: number;
+    refreshToken?: string;
+    email: string;
+    sub: string;
+    tier: Tier;
+  }) => void;
   setTier: (tier: Tier) => void;
   setAuthLoading: (loading: boolean) => void;
   setAuthError: (error: string | null) => void;
@@ -45,6 +53,16 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) =>
     set({ email: user.email, sub: user.sub, tier: user.tier }),
+
+  setSession: (session) =>
+    set((state) => ({
+      idToken: session.idToken,
+      expiresAt: session.expiresAt,
+      refreshToken: session.refreshToken ?? state.refreshToken,
+      email: session.email,
+      sub: session.sub,
+      tier: session.tier,
+    })),
 
   setTier: (tier) => set({ tier }),
 

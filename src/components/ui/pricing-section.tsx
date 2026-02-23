@@ -107,7 +107,7 @@ function TierCard({
       initial={reducedMotion ? false : { opacity: 0, x: slideX }}
       whileInView={reducedMotion ? undefined : { opacity: 1, x: 0 }}
       whileHover={reducedMotion ? undefined : { y: -8, scale: 1.02 }}
-      viewport={reducedMotion ? undefined : { once: false, amount: 0.2 }}
+      viewport={reducedMotion ? undefined : { once: true, amount: 0.2 }}
       transition={reducedMotion ? undefined : {
         opacity: { duration: 0.7, ease: 'easeOut' },
         x: { duration: 0.7, delay: (fromLeft ? index : index - 2) * 0.12, ease: 'easeOut' },

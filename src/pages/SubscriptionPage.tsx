@@ -20,9 +20,9 @@ import {
   getCustomerPortalUrl,
 } from '@/api/subscription';
 import type { SubscriptionInfo } from '@/api/subscription';
-import { cognitoClient } from '@/auth/CognitoClient';
-import { useAuthStore } from '@/store/authStore';
+import { refreshSession } from '@/auth/refreshSession';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSyncSubscriptionTier } from '@/hooks/useSyncSubscriptionTier';
 import { QuotaErrorBanner } from '@/components/QuotaError';
 import { is429 } from '@/utils/httpUtils';
 import { formatAmount, formatPeriodEnd } from '@/utils/fileUtils';
@@ -44,6 +44,7 @@ const TIER_GRADIENTS: Record<Tier, string> = {
   power: 'from-amber-500 to-amber-400',
 };
 
+
 export function SubscriptionPage() {
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -54,41 +55,38 @@ export function SubscriptionPage() {
     if (!new URLSearchParams(location.search).get('session_id')) return;
     // Clean up the query param so a page refresh won't re-trigger
     window.history.replaceState({}, '', location.pathname);
-    const refreshToken = useAuthStore.getState().refreshToken;
 
-    const doRefresh = () => {
-      if (!refreshToken) return Promise.resolve();
-      return cognitoClient
-        .refresh(refreshToken)
-        .then((result) => {
-          useAuthStore.getState().setTokens({
-            idToken: result.idToken,
-            expiresAt: result.expiresAt,
-          });
-          useAuthStore.getState().setUser({
-            email: result.email,
-            sub: result.sub,
-            tier: result.tier,
-          });
-        })
-        .catch(() => {
-          // Token refresh failed — subscription query will still work with current token
-        });
-    };
-
-    void doRefresh().then(() => {
+    void refreshSession().then(() => {
       void queryClient.invalidateQueries({ queryKey: ['subscription'] });
     });
 
     // Delayed second refresh: webhook may not have updated Cognito group yet.
     // Retry after 4s to pick up the correct tier in the JWT.
     const timer = setTimeout(() => {
-      void doRefresh().then(() => {
+      void refreshSession().then(() => {
         void queryClient.invalidateQueries({ queryKey: ['subscription'] });
       });
     }, 4000);
     return () => clearTimeout(timer);
   }, [location.search, location.pathname, queryClient]);
+
+  // After Stripe Customer Portal return: refresh JWT to pick up tier changes
+  useEffect(() => {
+    if (sessionStorage.getItem('portal_pending') !== 'true') return;
+    sessionStorage.removeItem('portal_pending');
+
+    void refreshSession().then(() => {
+      void queryClient.invalidateQueries({ queryKey: ['subscription'] });
+    });
+
+    // Delayed retry for webhook processing (same pattern as post-checkout)
+    const timer = setTimeout(() => {
+      void refreshSession().then(() => {
+        void queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      });
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [queryClient]);
 
   const {
     data,
@@ -100,21 +98,13 @@ export function SubscriptionPage() {
     queryFn: getSubscription,
   });
 
-  // Sync subscription tier to authStore so NavBar and Dashboard stay current.
-  // Handles the race condition where JWT refresh completes before the webhook
-  // updates the Cognito group.
-  useEffect(() => {
-    if (!data?.tier) return;
-    const storeTier = useAuthStore.getState().tier;
-    if (data.tier !== storeTier) {
-      useAuthStore.getState().setTier(data.tier);
-    }
-  }, [data?.tier]);
+  useSyncSubscriptionTier(data?.tier);
 
   const portalMut = useMutation({
     mutationFn: () => getCustomerPortalUrl(),
     // Gotcha #7: same tab redirect, NOT window.open()
     onSuccess: ({ portal_url }) => {
+      sessionStorage.setItem('portal_pending', 'true');
       window.location.href = portal_url;
     },
   });

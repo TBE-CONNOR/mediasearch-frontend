@@ -8,9 +8,11 @@ import type { Tier } from '@/types/domain';
  * ("document", "image", "audio", "video") -- NOT a MIME type.
  * File-type icon logic must switch on these strings.
  */
+export type CitationContentType = 'document' | 'image' | 'audio' | 'video';
+
 export interface Citation {
   source_file: string;
-  content_type: string;
+  content_type: CitationContentType;
   text_preview: string;
   retrieval_score: number;
   rerank_score: number;
@@ -117,4 +119,16 @@ export async function searchFiles(
   }));
 
   return { ...result, citations: enrichedCitations };
+}
+
+export interface SearchQuota {
+  searches_used: number;
+  searches_limit: number;
+  tier: Tier;
+  unlimited: boolean;
+}
+
+export async function getSearchQuota(): Promise<SearchQuota> {
+  const { data } = await api.get<SearchQuota>('/search-quota');
+  return data;
 }

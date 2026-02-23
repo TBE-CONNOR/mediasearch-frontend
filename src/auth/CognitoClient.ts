@@ -65,8 +65,11 @@ function extractFromSession(session: CognitoUserSession) {
   const expiresAt = session.getIdToken().getExpiration() * 1000;
   const payload = decodeJwtPayload(idToken);
   const tier = extractTierFromPayload(payload);
-  const email = payload['email'] as string;
-  const sub = payload['sub'] as string;
+  const email = payload['email'];
+  const sub = payload['sub'];
+  if (typeof email !== 'string' || typeof sub !== 'string') {
+    throw new Error('JWT missing required claims: email, sub');
+  }
   return { idToken, refreshToken, expiresAt, email, sub, tier };
 }
 
@@ -78,8 +81,11 @@ function extractFromTokens(
   const expiresAt = Date.now() + expiresIn * 1000;
   const payload = decodeJwtPayload(idToken);
   const tier = extractTierFromPayload(payload);
-  const email = payload['email'] as string;
-  const sub = payload['sub'] as string;
+  const email = payload['email'];
+  const sub = payload['sub'];
+  if (typeof email !== 'string' || typeof sub !== 'string') {
+    throw new Error('JWT missing required claims: email, sub');
+  }
   return { idToken, refreshToken, expiresAt, email, sub, tier };
 }
 

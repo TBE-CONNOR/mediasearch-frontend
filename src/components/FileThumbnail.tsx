@@ -1,4 +1,5 @@
 import { useState, createElement } from 'react';
+import { FileText } from 'lucide-react';
 import { VideoThumbnail } from '@/components/VideoThumbnail';
 import { getFileIcon } from '@/utils/fileUtils';
 import type { FileItem } from '@/api/files';
@@ -28,10 +29,24 @@ export function FileThumbnail({ file }: { file: FileItem }) {
     );
   }
 
+  if (file.content_type === 'application/pdf') {
+    return (
+      <div className="flex aspect-video items-center justify-center bg-zinc-800/50">
+        <div className="flex flex-col items-center gap-1">
+          <FileText className="h-10 w-10 text-red-400" aria-hidden="true" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-red-400">
+            PDF
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex aspect-video items-center justify-center bg-zinc-800/50">
       {createElement(getFileIcon(file.content_type), {
         className: 'h-10 w-10 text-zinc-600',
+        'aria-hidden': true,
       })}
     </div>
   );

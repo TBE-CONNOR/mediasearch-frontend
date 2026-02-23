@@ -202,8 +202,8 @@ export function ATCShader() {
       canvas.removeEventListener('webglcontextrestored', handleContextRestored);
       cancelAnimationFrame(animId);
       if (!gl.isContextLost()) {
-        if (vs) gl.detachShader(program, vs!);
-        if (fs) gl.detachShader(program, fs!);
+        if (vs) gl.detachShader(program, vs);
+        if (fs) gl.detachShader(program, fs);
         gl.deleteShader(vs);
         gl.deleteShader(fs);
         gl.deleteProgram(program);

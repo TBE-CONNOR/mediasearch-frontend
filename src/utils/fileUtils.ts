@@ -28,13 +28,12 @@ export function sanitizeFileName(name: string): string {
     .replace(/[\u2013\u2014]/g, '-')
     .replace(/\u00A0/g, ' ')
     // Strip anything remaining outside printable ASCII
-    // eslint-disable-next-line no-control-regex
     .replace(/[^\x20-\x7E.]/g, '_');
 }
 
 export function isHeic(file: File): boolean {
   if (file.type === 'image/heic' || file.type === 'image/heif') return true;
-  return /\.heic$/i.test(file.name);
+  return /\.hei[cf]$/i.test(file.name);
 }
 
 export async function convertHeicToJpeg(file: File): Promise<File> {
@@ -45,7 +44,7 @@ export async function convertHeicToJpeg(file: File): Promise<File> {
     quality: 0.92,
   });
   const jpegBlob = Array.isArray(blob) ? blob[0] : blob;
-  const newName = file.name.replace(/\.heic$/i, '.jpg');
+  const newName = file.name.replace(/\.hei[cf]$/i, '.jpg');
   return new File([jpegBlob], newName, { type: 'image/jpeg' });
 }
 
@@ -95,7 +94,7 @@ export function formatDateTime(iso: string): string {
 export function formatAmount(amount: number, currency: string): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency.toUpperCase(),
+    currency: (currency ?? 'usd').toUpperCase(),
   }).format(amount / 100);
 }
 
@@ -220,13 +219,13 @@ function getMediaDuration(
 export async function validateFile(file: File): Promise<string | null> {
   if (isImageFile(file)) {
     if (file.size > IMAGE_MAX_BYTES) {
-      return `Image exceeds 5 MB limit (got ${formatFileSize(file.size)})`;
+      return `Image exceeds ${formatFileSize(IMAGE_MAX_BYTES)} limit (got ${formatFileSize(file.size)})`;
     }
     return null;
   }
 
   if (file.size > GENERAL_MAX_BYTES) {
-    return `File exceeds 500 MB limit (got ${formatFileSize(file.size)})`;
+    return `File exceeds ${formatFileSize(GENERAL_MAX_BYTES)} limit (got ${formatFileSize(file.size)})`;
   }
 
   if (isVideoFile(file)) {

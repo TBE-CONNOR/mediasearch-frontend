@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { cognitoClient } from '@/auth/CognitoClient';
@@ -56,6 +56,11 @@ const AuthCallbackPage = lazy(() =>
     default: m.AuthCallbackPage,
   })),
 );
+const NotFoundPage = lazy(() =>
+  import('@/pages/NotFoundPage').then((m) => ({
+    default: m.NotFoundPage,
+  })),
+);
 
 const ReactQueryDevtools = import.meta.env.DEV
   ? lazy(() =>
@@ -73,30 +78,16 @@ function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
 
 function AuthBootstrap({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const applySession = (result: Awaited<ReturnType<typeof cognitoClient.restoreSession>>) => {
-      if (!result) return;
-      useAuthStore.getState().setTokens({
-        idToken: result.idToken,
-        expiresAt: result.expiresAt,
-        refreshToken: result.refreshToken,
-      });
-      useAuthStore.getState().setUser({
-        email: result.email,
-        sub: result.sub,
-        tier: result.tier,
-      });
-    };
-
     cognitoClient
       .restoreSession()
       .then(async (result) => {
         if (result && result.expiresAt > Date.now()) {
-          applySession(result);
+          useAuthStore.getState().setSession(result);
         } else if (result) {
           // Token expired but refresh token exists — attempt refresh
           try {
             const refreshed = await cognitoClient.refresh(result.refreshToken);
-            applySession(refreshed);
+            useAuthStore.getState().setSession(refreshed);
           } catch {
             // Refresh failed — clear stale session so user is prompted to sign in
             cognitoClient.signOut();
@@ -144,7 +135,7 @@ export default function App() {
                     />
                   </Route>
                 </Route>
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
             </RouteErrorBoundary>

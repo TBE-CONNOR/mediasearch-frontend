@@ -1,4 +1,4 @@
-import { useRef, useSyncExternalStore } from 'react';
+import { useRef } from 'react';
 import {
   useScroll,
   useTransform,
@@ -6,26 +6,7 @@ import {
   type MotionValue,
 } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-
-const MD_QUERY = '(max-width: 768px)';
-const mq = typeof window !== 'undefined' ? window.matchMedia(MD_QUERY) : null;
-
-function subscribe(callback: () => void) {
-  mq?.addEventListener('change', callback);
-  return () => mq?.removeEventListener('change', callback);
-}
-
-function getSnapshot() {
-  return mq?.matches ?? false;
-}
-
-function getServerSnapshot() {
-  return false;
-}
-
-function useMobileBreakpoint(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-}
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 export function ContainerScroll({
   titleComponent,
@@ -36,7 +17,7 @@ export function ContainerScroll({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
-  const isMobile = useMobileBreakpoint();
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const reducedMotion = useReducedMotion();
 
   const scaleDimensions = isMobile ? [0.7, 0.9] : [1.05, 1];

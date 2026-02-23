@@ -4,13 +4,15 @@ export { createCheckoutSession } from './checkout';
 export type { CreateCheckoutRequest, CreateCheckoutResponse } from './checkout';
 
 export { listFiles, getFile, deleteFile, getDownloadUrl } from './files';
-export type { FileItem, ProcessingStatus, ApiError, QuotaError } from './files';
+export type { FileItem, ApiError, QuotaError, DownloadResponse, DeleteResponse } from './files';
 
-export { searchFiles } from './search';
+export { searchFiles, getSearchQuota } from './search';
 export type {
+  CitationContentType,
   Citation,
   SearchMetadata,
   SearchResponse,
+  SearchQuota,
   EnrichedCitation,
   EnrichedSearchResponse,
 } from './search';

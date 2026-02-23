@@ -85,8 +85,21 @@ function startPolling(id: string, fileId: string) {
         void queryClient.invalidateQueries({ queryKey: ['files'] });
         return;
       }
-    } catch {
-      // 404 expected during S3 → DynamoDB gap; keep polling
+    } catch (err: unknown) {
+      // 404 expected during S3 → DynamoDB gap; keep polling.
+      // Non-404 errors (auth failure, server error) should stop polling.
+      const is404 =
+        err != null &&
+        typeof err === 'object' &&
+        'response' in err &&
+        (err as { response?: { status?: number } }).response?.status === 404;
+      if (!is404) {
+        updateUpload(id, {
+          stage: 'failed',
+          error: err instanceof Error ? err.message : 'Status check failed',
+        });
+        return;
+      }
     }
 
     const elapsed = Date.now() - startTime;

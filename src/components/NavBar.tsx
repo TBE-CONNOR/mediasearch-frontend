@@ -2,15 +2,12 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import { LogOut, Menu, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, focusRing } from '@/lib/utils';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useScrolled } from '@/hooks/useScrolled';
 import { useAuthStore } from '@/store/authStore';
 import { useAuth } from '@/auth/useAuth';
 import { TIER_LABELS, TIER_COLORS } from '@/config/constants';
-
-const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
 const PRIMARY_LINKS = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -47,8 +44,9 @@ export function NavBar() {
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (mobileOpen) {
+      const prev = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
+      return () => { document.body.style.overflow = prev; };
     }
   }, [mobileOpen]);
 
@@ -57,19 +55,22 @@ export function NavBar() {
     if (!mobileOpen || !menuRef.current) return;
 
     const menu = menuRef.current;
-    const focusableEls = menu.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled])',
-    );
-    if (focusableEls.length > 0) focusableEls[0].focus();
+    const getFocusable = () =>
+      menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+
+    const initial = getFocusable();
+    if (initial.length > 0) initial[0].focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         closeMobileMenu();
         return;
       }
-      if (e.key !== 'Tab' || focusableEls.length === 0) return;
-      const first = focusableEls[0];
-      const last = focusableEls[focusableEls.length - 1];
+      if (e.key !== 'Tab') return;
+      const els = getFocusable();
+      if (els.length === 0) return;
+      const first = els[0];
+      const last = els[els.length - 1];
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
         last.focus();
@@ -172,6 +173,7 @@ export function NavBar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-menu"
             className={cn(
               'rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800/80 hover:text-white sm:hidden',
               focusRing,
@@ -190,6 +192,7 @@ export function NavBar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-nav-menu"
             ref={menuRef}
             role="dialog"
             aria-modal="true"

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Navigate, Link } from 'react-router';
+import { Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '@/auth/useAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { ATCShader } from '@/components/ui/atc-shader';
+import { AuthDesktopPanel, AuthMobileHeader } from '@/components/AuthBrandPanel';
 import { Footer } from '@/components/Footer';
 import { getGoogleAuthUrl } from '@/utils/authUtils';
 import { GoogleIcon } from '@/components/GoogleIcon';
@@ -21,7 +22,11 @@ export function SignInPage() {
 
   const idToken = useAuthStore((s) => s.idToken);
   const authReady = useAuthStore((s) => s.authReady);
-  const from = (location.state as { from?: string })?.from || '/dashboard';
+  const rawFrom = (location.state as { from?: string })?.from;
+  const from =
+    rawFrom && rawFrom.startsWith('/') && !rawFrom.startsWith('//')
+      ? rawFrom
+      : '/dashboard';
 
   useEffect(() => {
     useAuthStore.getState().setAuthError(null);
@@ -30,7 +35,7 @@ export function SignInPage() {
   if (!authReady) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background" role="status" aria-label="Loading">
-        <div className="h-8 w-8 motion-safe:animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
+        <Loader2 className="h-8 w-8 motion-safe:animate-spin text-blue-500" />
       </div>
     );
   }
@@ -42,7 +47,7 @@ export function SignInPage() {
     void (async () => {
       try {
         await signIn(email, password);
-        await navigate(from, { replace: true });
+        void navigate(from, { replace: true });
       } catch {
         // error state set by hook
       }
@@ -54,32 +59,7 @@ export function SignInPage() {
       <main className="flex flex-1">
         {/* ── Left brand panel — desktop only ── */}
         {isDesktop && (
-          <div className="relative flex w-1/2 items-center justify-center overflow-hidden">
-            <ATCShader />
-            {/* Gradient overlay to soften shader edges */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent to-background/80" />
-
-            <motion.div
-              className="relative z-10 px-12 text-center"
-              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reducedMotion ? 0 : 0.7 }}
-            >
-              <Link
-                to="/"
-                className="inline-flex text-5xl font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
-              >
-                <span className="text-white">Media</span>
-                <span className="text-blue-400">Search</span>
-              </Link>
-              <p className="mt-4 text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                Upload anything, find everything.
-              </p>
-              <p className="mt-3 max-w-xs mx-auto text-sm text-zinc-400">
-                AI-powered semantic search across all your images, videos, audio, and documents.
-              </p>
-            </motion.div>
-          </div>
+          <AuthDesktopPanel subtitle="AI-powered semantic search across all your images, videos, audio, and documents." />
         )}
 
         {/* ── Right form panel ── */}
@@ -96,17 +76,7 @@ export function SignInPage() {
             transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : 0.1 }}
           >
             {/* Mobile brand header */}
-            {!isDesktop && (
-              <div className="mb-8 text-center">
-                <Link
-                  to="/"
-                  className="inline-flex text-3xl font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded"
-                >
-                  <span className="text-white">Media</span>
-                  <span className="text-blue-400">Search</span>
-                </Link>
-              </div>
-            )}
+            {!isDesktop && <AuthMobileHeader />}
 
             {/* Card */}
             <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 backdrop-blur-sm">

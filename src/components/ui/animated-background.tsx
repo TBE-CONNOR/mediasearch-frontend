@@ -55,6 +55,14 @@ export function AnimatedBackground({
         }
       : {
           onClick: () => handleSetActiveId(id),
+          onKeyDown: (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSetActiveId(id);
+            }
+          },
+          role: 'button' as const,
+          tabIndex: 0,
         };
 
     return cloneElement(child as ReactElement<Record<string, unknown>>, {

@@ -23,28 +23,26 @@ export function AIAnalysisView({
           type="button"
           onClick={onToggleAnswer}
           aria-expanded={answerOpen}
-          aria-controls={answerOpen ? 'ai-answer-panel' : undefined}
+          aria-controls="ai-answer-panel"
           className="flex w-full items-center justify-between px-4 py-3 text-left"
         >
           <span className="text-base font-medium text-zinc-300">AI Answer</span>
           {answerOpen ? (
-            <ChevronUp className="h-4 w-4 text-zinc-500" />
+            <ChevronUp className="h-4 w-4 text-zinc-500" aria-hidden="true" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-zinc-500" />
+            <ChevronDown className="h-4 w-4 text-zinc-500" aria-hidden="true" />
           )}
         </button>
-        {answerOpen && (
-          <div id="ai-answer-panel" className="border-t border-zinc-800 px-4 pb-4 pt-3">
-            <p className="whitespace-pre-wrap text-base text-zinc-300">
-              {data.answer}
+        <div id="ai-answer-panel" className="border-t border-zinc-800 px-4 pb-4 pt-3" hidden={!answerOpen}>
+          <p className="whitespace-pre-wrap text-base text-zinc-300">
+            {data.answer}
+          </p>
+          {isLowConfidence && (
+            <p className="mt-2 text-sm text-zinc-500">
+              No strong matches found in your files.
             </p>
-            {isLowConfidence && (
-              <p className="mt-2 text-sm text-zinc-500">
-                No strong matches found in your files.
-              </p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Citations */}

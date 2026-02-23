@@ -4,6 +4,8 @@ import { Music, FileText } from 'lucide-react';
 import type { FileItem } from '@/api/files';
 import type { EnrichedCitation } from '@/api/search';
 import { GALLERY_PREVIEW_LIMIT } from '@/config/constants';
+import { MediaPreviewModal } from '@/components/MediaPreviewModal';
+import { isPreviewable } from '@/utils/fileUtils';
 
 type CitationWithFile = EnrichedCitation & { file: FileItem };
 
@@ -69,6 +71,7 @@ function MediaPreview({
           src={mediaUrl}
           alt={fileName}
           onError={() => setImgError(true)}
+          loading="lazy"
           className="h-full w-full object-cover"
         />
       </div>
@@ -129,67 +132,93 @@ function MediaCard({
   mediaUrl?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const fileName = citation.file.file_name ?? citation.source_file;
   const score = citation.rerank_score;
   const isLong = citation.text_preview.length > GALLERY_PREVIEW_LIMIT;
   const hasControls = isInteractiveMedia(citation.content_type);
+  const canPreview = isPreviewable(citation.file);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700">
-      {/* Media preview — sits above the stretched link so controls are interactive */}
-      {hasControls ? (
-        <div className="relative z-10">
+    <>
+      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition-colors hover:border-zinc-700">
+        {/* Thumbnail area: previewable → button opens modal, interactive → inline controls, else → link to detail */}
+        {canPreview && !hasControls ? (
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            className="block w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-inset"
+            aria-label={`Preview ${fileName}`}
+          >
+            <MediaPreview
+              contentType={citation.content_type}
+              mediaUrl={mediaUrl}
+              fileName={fileName}
+            />
+          </button>
+        ) : hasControls ? (
           <MediaPreview
             contentType={citation.content_type}
             mediaUrl={mediaUrl}
             fileName={fileName}
           />
+        ) : (
+          <Link
+            to={`/files/${citation.file.file_id}`}
+            aria-label={`View ${fileName} details`}
+          >
+            <MediaPreview
+              contentType={citation.content_type}
+              mediaUrl={mediaUrl}
+              fileName={fileName}
+            />
+          </Link>
+        )}
+
+        <div className="p-4">
+          {/* Filename links to detail page + score */}
+          <div className="flex items-center justify-between gap-2">
+            <Link
+              to={`/files/${citation.file.file_id}`}
+              className="truncate text-base font-medium text-white transition-colors hover:text-blue-400"
+            >
+              {fileName}
+            </Link>
+            {score != null && (
+              <span className="shrink-0 text-sm text-zinc-500">
+                {(score * 100).toFixed(0)}%
+              </span>
+            )}
+          </div>
+
+          {/* Text preview */}
+          <p className="mt-1.5 text-sm text-zinc-400">
+            {isLong && !expanded
+              ? citation.text_preview.slice(0, GALLERY_PREVIEW_LIMIT) + '...'
+              : citation.text_preview}
+          </p>
+          {isLong && (
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              aria-expanded={expanded}
+              className="mt-1 text-sm text-blue-400 transition-colors hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded"
+            >
+              {expanded ? 'Show less' : 'Read more'}
+            </button>
+          )}
         </div>
-      ) : (
-        <MediaPreview
-          contentType={citation.content_type}
+      </div>
+
+      {canPreview && (
+        <MediaPreviewModal
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          contentType={citation.file.content_type}
           mediaUrl={mediaUrl}
           fileName={fileName}
         />
       )}
-
-      <div className="p-4">
-        {/* Filename + score */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="truncate text-base font-medium text-white">
-            {fileName}
-          </span>
-          {score != null && (
-            <span className="shrink-0 text-sm text-zinc-500">
-              {(score * 100).toFixed(0)}%
-            </span>
-          )}
-        </div>
-
-        {/* Text preview */}
-        <p className="mt-1.5 text-sm text-zinc-400">
-          {isLong && !expanded
-            ? citation.text_preview.slice(0, GALLERY_PREVIEW_LIMIT) + '...'
-            : citation.text_preview}
-        </p>
-        {isLong && (
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className="relative z-10 mt-1 text-sm text-blue-400 transition-colors hover:text-blue-300"
-          >
-            {expanded ? 'Show less' : 'Read more'}
-          </button>
-        )}
-      </div>
-
-      {/* Stretched link — covers the whole card but sits below interactive elements */}
-      <Link
-        to={`/files/${citation.file.file_id}`}
-        className="absolute inset-0 z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        aria-label={`View ${fileName} details`}
-      />
-    </div>
+    </>
   );
 }

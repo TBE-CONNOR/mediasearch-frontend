@@ -1,31 +1,21 @@
 import { useId, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, useMotionValue } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
 
 export function TextHoverEffect({
   text,
-  duration,
   className,
 }: {
   text: string;
-  duration?: number;
   className?: string;
 }) {
   const scopeId = useId();
   const svgRef = useRef<SVGSVGElement>(null);
-  const [cursor, setCursor] = useState({ x: 0, y: 0 });
+  const cx = useMotionValue('50%');
+  const cy = useMotionValue('50%');
   const [hovered, setHovered] = useState(false);
   const prefersReduced = useReducedMotion();
-
-  const svgRect = svgRef.current?.getBoundingClientRect();
-  const maskPosition =
-    cursor.x !== 0 && cursor.y !== 0 && svgRect
-      ? {
-          cx: `${((cursor.x - svgRect.left) / svgRect.width) * 100}%`,
-          cy: `${((cursor.y - svgRect.top) / svgRect.height) * 100}%`,
-        }
-      : { cx: '50%', cy: '50%' };
 
   // Reduced motion: render static outline text only
   if (prefersReduced) {
@@ -35,6 +25,8 @@ export function TextHoverEffect({
         height="100%"
         viewBox="0 0 300 100"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
         className={cn('select-none uppercase', className)}
       >
         <text
@@ -60,9 +52,17 @@ export function TextHoverEffect({
       height="100%"
       viewBox="0 0 300 100"
       xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onMouseMove={(e) => setCursor({ x: e.clientX, y: e.clientY })}
+      onMouseMove={(e) => {
+        const rect = svgRef.current?.getBoundingClientRect();
+        if (rect) {
+          cx.set(`${((e.clientX - rect.left) / rect.width) * 100}%`);
+          cy.set(`${((e.clientY - rect.top) / rect.height) * 100}%`);
+        }
+      }}
       className={cn('cursor-pointer select-none uppercase', className)}
     >
       <defs>
@@ -85,9 +85,7 @@ export function TextHoverEffect({
           id={`revealMask-${scopeId}`}
           gradientUnits="userSpaceOnUse"
           r="20%"
-          initial={{ cx: '50%', cy: '50%' }}
-          animate={maskPosition}
-          transition={{ duration: duration ?? 0, ease: 'easeOut' }}
+          style={{ cx, cy }}
         >
           <stop offset="0%" stopColor="white" />
           <stop offset="100%" stopColor="black" />
@@ -139,6 +137,7 @@ export function TextHoverEffect({
 export function FooterBackgroundGradient() {
   return (
     <div
+      aria-hidden="true"
       className="absolute inset-0 z-0"
       style={{
         background:

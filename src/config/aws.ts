@@ -19,7 +19,7 @@ if (missing.length) {
   );
 }
 
-function env(key: string): string {
+function env(key: (typeof required)[number]): string {
   return import.meta.env[key] as string;
 }
 

@@ -128,7 +128,7 @@ export const TESTIMONIALS: Testimonial[] = [
     quote:
       'I have 100+ videos of my favorite influencers talking scattered throughout my camera roll. I always only remember one phrase, and I love how that is all it takes to find a specific video.',
     name: 'Ryan Billings',
-    designation: 'College Dropout, Founder of cyberexamprep.com',
+    designation: 'Founder of CyberExamPrep',
     src: '/testimonials/Ryan_Billings.jpeg',
   },
 ];
